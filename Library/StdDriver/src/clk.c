@@ -304,6 +304,8 @@ void CLK_SetModuleClock(uint32_t u32ModuleIdx, uint32_t u32ClkSrc, uint32_t u32C
   */
 void CLK_EnableXtalRC(uint32_t u32ClkMask)
 {
+    if((u32ClkMask == CLK_PWRCTL_HXT_EN) || (u32ClkMask == CLK_PWRCTL_LXT_EN))
+        CLK->PWRCTL &= ~CLK_PWRCTL_XTLEN_Msk;
     CLK->PWRCTL |= u32ClkMask;
 }
 
