@@ -30,7 +30,7 @@ void SYS_Init(void)
     CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+    while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) != CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
     CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
@@ -44,7 +44,7 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
@@ -61,6 +61,23 @@ void SYS_Init(void)
 
     /* Lock protected registers */
     SYS_LockReg();
+}
+
+void UUART0_Init(void)
+{
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init USCI                                                                                               */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Reset USCI0 */
+    SYS->IPRST1 |= SYS_IPRST1_USCI0RST_Msk;
+    SYS->IPRST1 &= ~SYS_IPRST1_USCI0RST_Msk;
+
+    /* Configure USCI0 as UART mode */
+    UUART0->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
+    UUART0->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
+    UUART0->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
+    UUART0->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART0->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 }
 
 void USCI_SPI_Init(void)
@@ -92,7 +109,7 @@ int main()
     SYS_Init();
 
     /* Init USCI UART0 to 115200-8n1 for print message */
-    UUART_Open(UUART0, 115200);
+    UUART0_Init();
 
     /* Init USCI_SPI */
     USCI_SPI_Init();
@@ -111,7 +128,8 @@ int main()
     printf("In the meanwhile the USCI_SPI controller will receive %d data from the off-chip master device.\n", TEST_COUNT);
     printf("After the transfer is done, the %d received data will be printed out.\n", TEST_COUNT);
 
-    for(u32TxDataCount = 0; u32TxDataCount < TEST_COUNT; u32TxDataCount++) {
+    for(u32TxDataCount = 0; u32TxDataCount < TEST_COUNT; u32TxDataCount++)
+    {
         /* Write the initial value to source buffer */
         g_au32SourceData[u32TxDataCount] = 0xAA00 + u32TxDataCount;
         /* Clear destination buffer */
@@ -125,7 +143,8 @@ int main()
     printf("\n");
 
     /* Access TX and RX Buffer */
-    while(u32RxDataCount < TEST_COUNT) {
+    while(u32RxDataCount < TEST_COUNT)
+    {
         /* Check TX FULL flag and TX data count */
         if(((USPI1->BUFSTS & USPI_BUFSTS_TXFULL_Msk) == 0) && (u32TxDataCount < TEST_COUNT))
             USPI1->TXDAT = g_au32SourceData[u32TxDataCount++]; /* Write to TX Buffer */
@@ -136,7 +155,8 @@ int main()
 
     /* Print the received data */
     printf("Received data:\n");
-    for(u32RxDataCount = 0; u32RxDataCount < TEST_COUNT; u32RxDataCount++) {
+    for(u32RxDataCount = 0; u32RxDataCount < TEST_COUNT; u32RxDataCount++)
+    {
         printf("%d:\t0x%X\n", u32RxDataCount, g_au32DestinationData[u32RxDataCount]);
     }
     printf("The data transfer was done.\n");

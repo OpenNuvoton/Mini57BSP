@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>fmc_rw</TargetName>
+      <TargetName>FMC_RW</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
@@ -44,7 +44,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\obj\</OutputDirectory>
-          <OutputName>fmc_rw</OutputName>
+          <OutputName>FMC_RW</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>

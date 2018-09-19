@@ -26,7 +26,6 @@ volatile int32_t g_bWait         = TRUE;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-int32_t main(void);
 void USCI_UART_TEST_HANDLE(void);
 void USCI_UART_FunctionTest(void);
 
@@ -53,7 +52,7 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
@@ -103,25 +102,29 @@ void USCI_UART_TEST_HANDLE()
     uint8_t u8InChar = 0xFF;
     uint32_t u32IntSts = UUART0->PROTSTS;
 
-    if(u32IntSts & UUART_PROTSTS_RXENDIF_Msk) {
+    if(u32IntSts & UUART_PROTSTS_RXENDIF_Msk)
+    {
         /* Clear RX end interrupt flag*/
         UUART_CLR_PROT_INT_FLAG(UUART0, UUART_PROTSTS_RXENDIF_Msk);
 
         printf("\nInput:");
 
         /* Get all the input characters */
-        while(!UUART_IS_RX_EMPTY(UUART0)) {
+        while(!UUART_IS_RX_EMPTY(UUART0))
+        {
             /* Get the character from USCI UART Buffer */
             u8InChar = UUART_READ(UUART0);
 
             printf("%c ", u8InChar);
 
-            if(u8InChar == '0') {
+            if(u8InChar == '0')
+            {
                 g_bWait = FALSE;
             }
 
             /* Check if buffer full */
-            if(g_u32comRbytes < RXBUFSIZE) {
+            if(g_u32comRbytes < RXBUFSIZE)
+            {
                 /* Enqueue the character */
                 g_u8RecData[g_u32comRtail] = u8InChar;
                 g_u32comRtail = (g_u32comRtail == (RXBUFSIZE - 1)) ? 0 : (g_u32comRtail + 1);
@@ -132,14 +135,16 @@ void USCI_UART_TEST_HANDLE()
         printf("\nTransmission Test:");
     }
 
-    if(u32IntSts & UUART_PROTSTS_TXENDIF_Msk) {
+    if(u32IntSts & UUART_PROTSTS_TXENDIF_Msk)
+    {
         uint16_t tmp;
         tmp = g_u32comRtail;
-		
+
         /* Clear TX end interrupt flag*/
-        UUART_CLR_PROT_INT_FLAG(UUART0, UUART_PROTSTS_TXENDIF_Msk);	
-		
-        if(g_u32comRhead != tmp) {
+        UUART_CLR_PROT_INT_FLAG(UUART0, UUART_PROTSTS_TXENDIF_Msk);
+
+        if(g_u32comRhead != tmp)
+        {
             u8InChar = g_u8RecData[g_u32comRhead];
             while(UUART_IS_TX_FULL(UUART0));  /* Wait Tx is not full to transmit data */
             UUART_WRITE(UUART0, u8InChar);

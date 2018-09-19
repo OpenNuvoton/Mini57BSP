@@ -17,9 +17,12 @@ void EPWM_IRQHandler(void)
     static int toggle = 0;  /* First two already fill into EPWM, so start from 30% */
 
     /* Update EPWM channel 0 duty */
-    if(toggle == 0) {
+    if(toggle == 0)
+    {
         EPWM_SET_CMR(EPWM, 0, duty30);
-    } else {
+    }
+    else
+    {
         EPWM_SET_CMR(EPWM, 0, duty60);
     }
     toggle ^= 1;
@@ -51,15 +54,14 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPA multi-function pins for EPWM Channel0 */
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA0MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA0_EPWM_CH0;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA0MFP_Msk)) | SYS_GPA_MFP_PA0_EPWM_CH0;
 
     /* Set GPA0 as output mode */
     GPIO_SetMode(PA, BIT0, GPIO_MODE_OUTPUT);

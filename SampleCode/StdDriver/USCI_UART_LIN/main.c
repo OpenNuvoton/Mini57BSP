@@ -26,9 +26,7 @@ uint8_t g_u8SendData[12] ;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-extern char GetChar(void);
 void LIN_FunctionTest(void);
-void LIN_FunctionTestUsingLinCtlReg(void);
 void LIN_MasterTest(uint32_t u32id, uint32_t u32ModeSel);
 void LIN_SendHeader(uint32_t u32id);
 void LIN_SendResponse(int32_t checkSumOption, uint32_t *pu32TxBuf);
@@ -83,11 +81,13 @@ void LIN_FunctionTest()
         Measurement the UUART1 Tx pin to check it.
     */
 
-    do {
+    do
+    {
         LIN_TestItem();
         u32Item = getchar();
         printf("%c\n", u32Item);
-        switch(u32Item) {
+        switch(u32Item)
+        {
         case '1':
             LIN_SendHeader(0x30);
             break;
@@ -100,7 +100,8 @@ void LIN_FunctionTest()
         default:
             break;
         }
-    } while(u32Item != 27);
+    }
+    while(u32Item != 27);
 
     UUART_Close(UUART1);
 
@@ -144,7 +145,8 @@ uint32_t GetCheckSumValue(uint8_t *pu8Buf, uint32_t u32ModeSel)
 {
     uint32_t i, CheckSum = 0;
 
-    for(i = u32ModeSel; i <= 9; i++) {
+    for(i = u32ModeSel; i <= 9; i++)
+    {
         CheckSum += pu8Buf[i];
         if(CheckSum >= 256)
             CheckSum -= 255;
@@ -159,7 +161,8 @@ uint8_t ComputeChksumValue(uint8_t *pu8Buf, uint32_t u32ByteCnt)
 {
     uint32_t i, CheckSum = 0;
 
-    for(i = 0 ; i < u32ByteCnt; i++) {
+    for(i = 0 ; i < u32ByteCnt; i++)
+    {
         CheckSum += pu8Buf[i];
         if(CheckSum >= 256)
             CheckSum -= 255;
@@ -236,7 +239,7 @@ void SYS_Init(void)
 
     /* Enable IP clock */
     CLK_EnableModuleClock(USCI0_MODULE);
-    CLK_EnableModuleClock(USCI1_MODULE);	
+    CLK_EnableModuleClock(USCI1_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
@@ -244,18 +247,18 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPD multi-function pins for USCI UART1 GPD3(TX) and GPD4(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk)) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
 
     /* Set GPD3 as output mode and GPD4 as Input mode */
     GPIO_SetMode(PD, BIT3, GPIO_MODE_OUTPUT);
-    GPIO_SetMode(PD, BIT4, GPIO_MODE_INPUT);	
+    GPIO_SetMode(PD, BIT4, GPIO_MODE_INPUT);
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -274,7 +277,7 @@ int main()
     /* The USCI usage is exclusive */
     /* If user configure the USCI port as UUART function, that port cannot use USPI or UI2C function. */
     /* Init USCI UART1 for testing */
-    UUART_Open(UUART1, 115200);	
+    UUART_Open(UUART1, 115200);
 
     /*---------------------------------------------------------------------------------------------------------*/
     /* SAMPLE CODE                                                                                             */

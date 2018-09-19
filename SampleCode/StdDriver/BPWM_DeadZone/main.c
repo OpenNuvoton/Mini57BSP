@@ -17,7 +17,8 @@ void BPWM0_IRQHandler(void)
     static uint32_t out;
 
     /* Channel 0 frequency is 100Hz, every 1 second enter this IRQ handler 100 times. */
-    if(++cnt == 100) {
+    if(++cnt == 100)
+    {
         if(out)
         {
             BPWM_EnableOutput(BPWM, 0x3);
@@ -61,18 +62,16 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPC0 multi-function pins for BPWM Channel0 */
-    SYS->GPC_MFP = (SYS->GPC_MFP & (~SYS_GPC_MFP_PC0MFP_Msk));
-    SYS->GPC_MFP |= SYS_GPC_MFP_PC0_BPWM_CH0;
+    SYS->GPC_MFP = (SYS->GPC_MFP & (~SYS_GPC_MFP_PC0MFP_Msk)) | SYS_GPC_MFP_PC0_BPWM_CH0;
     /* Set GPB2 multi-function pins for BPWM Channel1 */
-    SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB2MFP_Msk));
-    SYS->GPB_MFP |= SYS_GPB_MFP_PB2_BPWM_CH1;
+    SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB2MFP_Msk)) | SYS_GPB_MFP_PB2_BPWM_CH1;
 
     /* Set GPC0, GPB2 as output mode */
     GPIO_SetMode(PC, BIT0, GPIO_MODE_OUTPUT);

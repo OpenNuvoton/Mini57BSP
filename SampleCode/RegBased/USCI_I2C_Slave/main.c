@@ -35,10 +35,13 @@ void USCI1_IRQHandler(void)
 
     u32Status = UI2C_GET_PROT_STATUS(UI2C1);
 
-    if (UI2C_GET_TIMEOUT_FLAG(UI2C1)) {
+    if (UI2C_GET_TIMEOUT_FLAG(UI2C1))
+    {
         /* Clear USCI_I2C1 Timeout Flag */
-        UI2C_ClearTimeoutFlag(UI2C1);
-    } else {
+        UI2C1->PROTSTS = UI2C_PROTSTS_TOIF_Msk;
+    }
+    else
+    {
         if (s_UI2C1HandlerFn != NULL)
             s_UI2C1HandlerFn(u32Status);
     }
@@ -51,46 +54,61 @@ void USCI_I2C_SlaveTRx(uint32_t u32Status)
 {
     uint32_t temp;
 
-    if((u32Status & UI2C_PROTSTS_STARIF_Msk) == UI2C_PROTSTS_STARIF_Msk) {
+    if((u32Status & UI2C_PROTSTS_STARIF_Msk) == UI2C_PROTSTS_STARIF_Msk)
+    {
         UI2C_CLR_PROT_INT_FLAG(UI2C1, UI2C_PROTSTS_STARIF_Msk); /* Clear START INT Flag */
         g_u8DataLenS = 0;
         s_Event = SLAVE_ADDRESS_ACK;
         UI2C_SET_CONTROL_REG(UI2C1, (UI2C_CTL_PTRG | UI2C_CTL_AA));
-    } else if((u32Status & UI2C_PROTSTS_ACKIF_Msk) == UI2C_PROTSTS_ACKIF_Msk) {
+    }
+    else if((u32Status & UI2C_PROTSTS_ACKIF_Msk) == UI2C_PROTSTS_ACKIF_Msk)
+    {
         UI2C_CLR_PROT_INT_FLAG(UI2C1, UI2C_PROTSTS_ACKIF_Msk);  /* Clear ACK INT Flag */
-        if(s_Event == SLAVE_ADDRESS_ACK) {
+        if(s_Event == SLAVE_ADDRESS_ACK)
+        {
             g_u8DataLenS = 0;
-            if((u32Status & UI2C_PROTSTS_SLAREAD_Msk) == UI2C_PROTSTS_SLAREAD_Msk) {   /* Own SLA+R has been receive; ACK has been return */
+            if((u32Status & UI2C_PROTSTS_SLAREAD_Msk) == UI2C_PROTSTS_SLAREAD_Msk)     /* Own SLA+R has been receive; ACK has been return */
+            {
                 s_Event = SLAVE_SEND_DATA;
                 UI2C_SET_DATA(UI2C1, g_au8SlvData[slave_buff_addr]);
                 slave_buff_addr++;
-            } else {        /* Own SLA+W has been receive; ACK has been return */
+            }
+            else            /* Own SLA+W has been receive; ACK has been return */
+            {
                 s_Event = SLAVE_GET_DATA;
             }
             g_u8DeviceAddr = (unsigned char)UI2C_GET_DATA(UI2C1);
-        } else if(s_Event == SLAVE_GET_DATA) {
+        }
+        else if(s_Event == SLAVE_GET_DATA)
+        {
             temp = (unsigned char)UI2C_GET_DATA(UI2C1);
             g_au8RxData[g_u8DataLenS] = temp;
             g_u8DataLenS++;
 
-            if(g_u8DataLenS == 2) { /* Address has been received; ACK has been returned*/
+            if(g_u8DataLenS == 2)   /* Address has been received; ACK has been returned*/
+            {
                 temp = (g_au8RxData[0] << 8);
                 temp += g_au8RxData[1];
                 slave_buff_addr = temp;
             }
-            if(g_u8DataLenS == 3) { /* Data has been received; ACK has been returned*/
+            if(g_u8DataLenS == 3)   /* Data has been received; ACK has been returned*/
+            {
                 temp = g_au8RxData[2];
                 g_au8SlvData[slave_buff_addr] = temp;
                 g_u8DataLenS = 0;
             }
         }
         UI2C_SET_CONTROL_REG(UI2C1, (UI2C_CTL_PTRG | UI2C_CTL_AA));
-    } else if((u32Status & UI2C_PROTSTS_NACKIF_Msk) == UI2C_PROTSTS_NACKIF_Msk) {   /* Data in TXDAT has been transmitted; NACK has been received */
+    }
+    else if((u32Status & UI2C_PROTSTS_NACKIF_Msk) == UI2C_PROTSTS_NACKIF_Msk)       /* Data in TXDAT has been transmitted; NACK has been received */
+    {
         UI2C_CLR_PROT_INT_FLAG(UI2C1, UI2C_PROTSTS_NACKIF_Msk); /* Clear NACK INT Flag */
         g_u8DataLenS = 0;
         s_Event = SLAVE_ADDRESS_ACK;
         UI2C_SET_CONTROL_REG(UI2C1, (UI2C_CTL_PTRG | UI2C_CTL_AA));
-    } else if((u32Status & UI2C_PROTSTS_STORIF_Msk) == UI2C_PROTSTS_STORIF_Msk) {
+    }
+    else if((u32Status & UI2C_PROTSTS_STORIF_Msk) == UI2C_PROTSTS_STORIF_Msk)
+    {
         UI2C_CLR_PROT_INT_FLAG(UI2C1, UI2C_PROTSTS_STORIF_Msk); /* Clear STOP INT Flag */
         g_u8DataLenS = 0;
         s_Event = SLAVE_ADDRESS_ACK;
@@ -107,7 +125,7 @@ void SYS_Init(void)
     CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+    while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) != CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
     CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
@@ -121,22 +139,39 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
 
     /* Set GPC multi-function pins for USCI I2C1 GPC0(SCL) and GPC2(SDA) */
-    SYS->GPC_MFP = SYS->GPC_MFP & ~(SYS_GPC_MFP_PC0MFP_Msk | SYS_GPC_MFP_PC2MFP_Msk) | (SYS_GPC_MFP_PC0_I2C1_SCL | SYS_GPC_MFP_PC2_I2C1_SDA);
+    SYS->GPC_MFP = (SYS->GPC_MFP & ~(SYS_GPC_MFP_PC0MFP_Msk | SYS_GPC_MFP_PC2MFP_Msk)) | (SYS_GPC_MFP_PC0_I2C1_SCL | SYS_GPC_MFP_PC2_I2C1_SDA);
 
     /* Lock protected registers */
     SYS_LockReg();
 }
 
+void UUART0_Init(void)
+{
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Init USCI                                                                                               */
+    /*---------------------------------------------------------------------------------------------------------*/
+    /* Reset USCI0 */
+    SYS->IPRST1 |= SYS_IPRST1_USCI0RST_Msk;
+    SYS->IPRST1 &= ~SYS_IPRST1_USCI0RST_Msk;
+
+    /* Configure USCI0 as UART mode */
+    UUART0->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
+    UUART0->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
+    UUART0->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
+    UUART0->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART0->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
+}
+
 void UI2C1_Init(uint32_t u32ClkSpeed)
 {
     uint32_t u32ClkDiv;
-    uint32_t u32Pclk = CLK_GetPCLKFreq();
+    uint32_t u32Pclk = SystemCoreClock;
 
     /* The USCI usage is exclusive */
     /* If user configure the USCI port as UI2C function, that port cannot use UUART or USPI function. */
@@ -175,7 +210,7 @@ int main()
     SYS_Init();
 
     /* Init USCI UART0 to 115200-8n1 for print message */
-    UUART_Open(UUART0, 115200);
+    UUART0_Init();
 
     /*
         This sample code sets USCI_I2C bus clock to 100kHz. Then, Master accesses Slave with Byte Write
@@ -193,7 +228,8 @@ int main()
     s_Event = SLAVE_ADDRESS_ACK;
     UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
 
-    for (i = 0; i < 0x100; i++) {
+    for (i = 0; i < 0x100; i++)
+    {
         g_au8SlvData[i] = 0;
     }
 

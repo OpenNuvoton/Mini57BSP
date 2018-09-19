@@ -17,16 +17,16 @@ void SYS_Init(void)
     SYS_UnlockReg();
 
     /* Enable 48MHz HIRC */
-    CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
+    CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
-    CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
+    CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
 
     /* Enable USCI0 IP clock */
-    CLK->APBCLK = CLK->APBCLK | CLK_APBCLK_USCI0CKEN_Msk;
+    CLK_EnableModuleClock(USCI0_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
@@ -34,10 +34,12 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) |
+                   (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
-    PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
+    GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
+    GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -58,7 +60,6 @@ void GPABCD_IRQHandler(void)
     if(GPIO_GET_INT_FLAG(PB, BIT0))     /* To check if PB.0 interrupt occurred */
     {
         GPIO_CLR_INT_FLAG(PB, BIT0);    /* Clear PB.0 interrupt flag */
-        /* printf("PB.0 INT occurred. \n"); */
     }
     else
     {    /* Un-expected interrupt. Just clear all PORTA, PORTB, PORTC, PORTD interrupts */
@@ -66,7 +67,6 @@ void GPABCD_IRQHandler(void)
         GPIO_CLR_INT_FLAG(PB, GPIO_GET_INT_FLAG(PB, 0x1F));
         GPIO_CLR_INT_FLAG(PC, GPIO_GET_INT_FLAG(PC, 0x1F));
         GPIO_CLR_INT_FLAG(PD, GPIO_GET_INT_FLAG(PD, 0x7F));
-        /* printf("Un-expected interrupts. \n"); */
     }
 }
 

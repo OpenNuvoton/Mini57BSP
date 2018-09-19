@@ -1,8 +1,8 @@
 /******************************************************************************
  * @file     APROM_main.c
  * @version  V1.00
- * $Revision: 1 $
- * $Date: 17/04/19 7:49p $ 
+ * $Revision: 3 $
+ * $Date: 18/07/17 4:47p $ 
  * @brief    This sample code includes LDROM image (fmc_ld_iap) 
  *           and APROM image (fmc_ap_main).
  *           It shows how to branch between APROM and LDROM. To run 
@@ -12,47 +12,45 @@
  *
  * @note
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/   
+*****************************************************************************/
 #include <stdio.h>
 #include "Mini57Series.h"
 #include "fmc.h"
 
 typedef void (FUNC_PTR)(void);
-
+int IsDebugFifoEmpty(void);
 extern uint32_t  loaderImage1Base, loaderImage1Limit;
-
-
 
 void SYS_Init(void)
 {
     /* Unlock protected registers */
     SYS_UnlockReg();
-	
-		/* Enable 48MHz HIRC */
-    CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk; 	
+
+    /* Enable 48MHz HIRC */
+    CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);	
-	
-		/* HCLK Clock source from HIRC */
-		CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
-	
-	  /* Enable USCI0 IP clock */
-		CLK->APBCLK = CLK->APBCLK | CLK_APBCLK_USCI0CKEN_Msk;	
+    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+
+    /* HCLK Clock source from HIRC */
+    CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
+
+    /* Enable USCI0 IP clock */
+    CLK_EnableModuleClock(USCI0_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
     SystemCoreClockUpdate();
-	
-		/* USCI-Uart0-GPD5(TX) + GPD6(RX) */
-    /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */	
-	  SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);	
-	
-		/* Set GPD5 as output mode and GPD6 as Input mode */ 
-		PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);	
-	
+
+    /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
+    /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
+    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+
+    /* Set GPD5 as output mode and GPD6 as Input mode */
+    PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
+
     /* Lock protected registers */
-    SYS_LockReg();		
+    SYS_LockReg();
 }
 
 static int  set_IAP_boot_mode(void)
@@ -79,7 +77,7 @@ static int  set_IAP_boot_mode(void)
 
 
 #ifdef __ARMCC_VERSION
-__asm __set_SP(uint32_t _sp)
+__asm void __set_SP(uint32_t _sp)
 {
     MSR MSP, r0
     BX lr
@@ -141,7 +139,7 @@ int main()
     SYS_UnlockReg();
 
     /* Init USCI UART0 to 115200-8n1 for print message */
-		UUART_Open(UUART0, 115200);	
+    UUART_Open(UUART0, 115200);
 
     printf("\n\n");
     printf("+----------------------------------------+\n");
@@ -197,7 +195,7 @@ int main()
             case '0':
                 FMC_ENABLE_LD_UPDATE();
                 if (load_image_to_flash((uint32_t)&loaderImage1Base, (uint32_t)&loaderImage1Limit, 
-                                        FMC_LDROM_BASE, FMC_LDROM_SIZE) != 0)
+                                    FMC_LDROM_BASE, FMC_LDROM_SIZE) != 0)
                 {
                     printf("Load image to LDROM failed!\n");
                     goto lexit;
@@ -207,22 +205,26 @@ int main()
 
             case '1':
                 printf("\n\nChange VECMAP and branch to LDROM...\n");
-#if 0						
-                while (!(UART0->FIFOSTS & UART_FIFOSTS_TXEMPTY_Msk));
-#endif
+                while(!IsDebugFifoEmpty()); /* Wait Tx empty */
                 /*  NOTE!
                  *     Before change VECMAP, user MUST disable all interrupts.
                  *     The following code CANNOT locate in address 0x0 ~ 0x200.
                  */
                 
-                /* FMC_SetVectorPageAddr(FMC_LDROM_BASE) */
-                FMC->ISPCMD = FMC_ISPCMD_VECMAP;
-                FMC->ISPADDR = FMC_LDROM_BASE;
-                FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-                while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk) ;
+                FMC_SetVectorPageAddr(FMC_LDROM_BASE);
+                /*  FMC->ISPCMD = FMC_ISPCMD_VECMAP;
+                    FMC->ISPADDR = FMC_LDROM_BASE;
+                    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+                    while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk) ;*/
                 
                 func = (FUNC_PTR *)FMC_Read(FMC_LDROM_BASE + 4);
-                __set_SP(FMC_Read(FMC_LDROM_BASE));
+#ifdef __GNUC__                        /* for GNU C compiler */
+                u32Data = *(uint32_t *)FMC_LDROM_BASE;
+                asm("msr msp, %0" : : "r" (u32Data));
+#else
+                __set_SP(*(uint32_t *)FMC_LDROM_BASE);
+#endif
+
                 func();
                 break;
 

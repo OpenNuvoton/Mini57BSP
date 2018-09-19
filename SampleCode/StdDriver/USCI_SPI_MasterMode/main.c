@@ -3,7 +3,7 @@
  * @version  V1.00
  * $Revision: 1 $
  * $Date: 17/04/19 7:49p $
- * @brief 
+ * @brief
  *          Configure USCI_SPI1 as Master mode and demonstrate how to communicate with an off-chip SPI Slave device.
  *          Needs to work with USCI_SPI_SlaveMode sample code.
  * @note
@@ -28,13 +28,15 @@ void USCI1_IRQHandler(void)
     USPI_CLR_PROT_INT_FLAG(USPI1, USPI_PROTSTS_TXENDIF_Msk);
 
     /* Check RX EMPTY flag */
-    while(USPI_GET_RX_EMPTY_FLAG(USPI1) == 0) {
+    while(USPI_GET_RX_EMPTY_FLAG(USPI1) == 0)
+    {
         /* Read RX Buffer */
         u32RxData = USPI_READ_RX(USPI1);
         g_au32DestinationData[g_u32RxDataCount++] = u32RxData;
     }
     /* Check TX data count */
-    if(g_u32TxDataCount < TEST_COUNT) {
+    if(g_u32TxDataCount < TEST_COUNT)
+    {
         /* Write to TX Buffer */
         USPI_WRITE_TX(USPI1, g_au32SourceData[g_u32TxDataCount++]);
     }
@@ -65,7 +67,7 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
@@ -91,7 +93,7 @@ void USCI_SPI_Init(void)
     /* Init USCI_SPI                                                                                           */
     /*---------------------------------------------------------------------------------------------------------*/
     /* The USCI usage is exclusive */
-    /* If user configure the USCI port as USPI function, that port cannot use UUART or UI2C function. */	
+    /* If user configure the USCI port as USPI function, that port cannot use UUART or UI2C function. */
     /* Configure USCI_SPI1 as a master, USCI_SPI clock rate 2 MHz,
        clock idle low, 16-bit transaction, drive output on falling clock edge and latch input on rising edge. */
     USPI_Open(USPI1, USPI_MASTER, USPI_MODE_0, 16, 2000000);
@@ -127,7 +129,8 @@ int main()
     printf("After the transfer is done, the %d received data will be printed out.\n", TEST_COUNT);
     printf("The USCI_SPI master configuration is ready.\n");
 
-    for(u32DataCount = 0; u32DataCount < TEST_COUNT; u32DataCount++) {
+    for(u32DataCount = 0; u32DataCount < TEST_COUNT; u32DataCount++)
+    {
         /* Write the initial value to source buffer */
         g_au32SourceData[u32DataCount] = 0x5500 + u32DataCount;
         /* Clear destination buffer */
@@ -152,7 +155,8 @@ int main()
 
     /* Print the received data */
     printf("Received data:\n");
-    for(u32DataCount = 0; u32DataCount < TEST_COUNT; u32DataCount++) {
+    for(u32DataCount = 0; u32DataCount < TEST_COUNT; u32DataCount++)
+    {
         printf("%d:\t0x%X\n", u32DataCount, g_au32DestinationData[u32DataCount]);
     }
     /* Disable TX end interrupt */

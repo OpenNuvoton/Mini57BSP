@@ -3,7 +3,7 @@
  * @version  V1.00
  * $Revision: 1 $
  * $Date: 17/04/19 7:49p $
- * @brief 
+ * @brief
  *           Configure USCI_SPI1 as Slave mode and demonstrate how to communicate with an off-chip SPI Master device.
  *           This sample code needs to work with USCI_SPI_MasterMode sample code.
  * @note
@@ -45,7 +45,7 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
@@ -71,10 +71,10 @@ void USCI_SPI_Init(void)
     /* Init USCI_SPI                                                                                           */
     /*---------------------------------------------------------------------------------------------------------*/
     /* The USCI usage is exclusive */
-    /* If user configure the USCI port as USPI function, that port cannot use UUART or UI2C function. */	
+    /* If user configure the USCI port as USPI function, that port cannot use UUART or UI2C function. */
     /* Configure USCI_SPI1 as a slave, clock idle low, 16-bit transaction, drive output on falling clock edge and latch input on rising edge. */
     /* Configure USCI_SPI1 as a low level active device. USCI_SPI peripheral clock rate = f_PCLK */
-    USPI_Open(USPI1, USPI_SLAVE, USPI_MODE_0, 16, NULL);
+    USPI_Open(USPI1, USPI_SLAVE, USPI_MODE_0, 16, 0);
 }
 
 
@@ -104,7 +104,8 @@ int main()
     printf("In the meanwhile the USCI_SPI controller will receive %d data from the off-chip master device.\n", TEST_COUNT);
     printf("After the transfer is done, the %d received data will be printed out.\n", TEST_COUNT);
 
-    for(u32TxDataCount = 0; u32TxDataCount < TEST_COUNT; u32TxDataCount++) {
+    for(u32TxDataCount = 0; u32TxDataCount < TEST_COUNT; u32TxDataCount++)
+    {
         /* Write the initial value to source buffer */
         g_au32SourceData[u32TxDataCount] = 0xAA00 + u32TxDataCount;
         /* Clear destination buffer */
@@ -118,7 +119,8 @@ int main()
     printf("\n");
 
     /* Access TX and RX Buffer */
-    while(u32RxDataCount < TEST_COUNT) {
+    while(u32RxDataCount < TEST_COUNT)
+    {
         /* Check TX FULL flag and TX data count */
         if((USPI_GET_TX_FULL_FLAG(USPI1) == 0) && (u32TxDataCount < TEST_COUNT))
             USPI_WRITE_TX(USPI1, g_au32SourceData[u32TxDataCount++]); /* Write to TX Buffer */
@@ -129,7 +131,8 @@ int main()
 
     /* Print the received data */
     printf("Received data:\n");
-    for(u32RxDataCount = 0; u32RxDataCount < TEST_COUNT; u32RxDataCount++) {
+    for(u32RxDataCount = 0; u32RxDataCount < TEST_COUNT; u32RxDataCount++)
+    {
         printf("%d:\t0x%X\n", u32RxDataCount, g_au32DestinationData[u32RxDataCount]);
     }
     printf("The data transfer was done.\n");

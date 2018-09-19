@@ -17,7 +17,8 @@ void EPWM_IRQHandler(void)
     static uint32_t out;
 
     /* Channel 0 frequency is 100Hz, every 1 second enter this IRQ handler 100 times. */
-    if(++cnt == 100) {
+    if(++cnt == 100)
+    {
         if(out)
             EPWM_EnableOutput(EPWM, 0x3F);
         else
@@ -53,25 +54,19 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPA multi-function pins for EPWM Channel0~5 */
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA0MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA0_EPWM_CH0;
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA1MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA1_EPWM_CH1;
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA2MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA2_EPWM_CH2;
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA3MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA3_EPWM_CH3;
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA4MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA4_EPWM_CH4;
-    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA5MFP_Msk));
-    SYS->GPA_MFP |= SYS_GPA_MFP_PA5_EPWM_CH5;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA0MFP_Msk)) | SYS_GPA_MFP_PA0_EPWM_CH0;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA1MFP_Msk)) | SYS_GPA_MFP_PA1_EPWM_CH1;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA2MFP_Msk)) | SYS_GPA_MFP_PA2_EPWM_CH2;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA3MFP_Msk)) | SYS_GPA_MFP_PA3_EPWM_CH3;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA4MFP_Msk)) | SYS_GPA_MFP_PA4_EPWM_CH4;
+    SYS->GPA_MFP = (SYS->GPA_MFP & (~SYS_GPA_MFP_PA5MFP_Msk)) | SYS_GPA_MFP_PA5_EPWM_CH5;
 
     /* Set GPA0~5 as output mode */
     GPIO_SetMode(PA, 0x3F, GPIO_MODE_OUTPUT);

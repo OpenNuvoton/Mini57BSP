@@ -18,8 +18,6 @@
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-int32_t main(void);
-extern char GetChar(void);
 void USCI_AutoBaudRate_RxTest(void);
 
 void SYS_Init(void)
@@ -46,14 +44,14 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPD multi-function pins for USCI UART1 GPD3(TX) and GPD4(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk)) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
 
     /* Set GPD3 as output mode and GPD4 as Input mode */
     GPIO_SetMode(PD, BIT3, GPIO_MODE_OUTPUT);
@@ -154,11 +152,14 @@ void USCI_AutoBaudRate_RxTest()
     /* Wait until auto baud rate detect finished or time-out */
     while(UUART1->PROTCTL & UUART_PROTCTL_ABREN_Msk);
 
-    if(UUART_GET_PROT_STATUS(UUART1) & UUART_PROTSTS_ABRDETIF_Msk) {
+    if(UUART_GET_PROT_STATUS(UUART1) & UUART_PROTSTS_ABRDETIF_Msk)
+    {
         /* Clear auto baud rate detect finished flag */
         UUART_CLR_PROT_INT_FLAG(UUART1, UUART_PROTSTS_ABRDETIF_Msk);
         printf("Baud rate is %dbps.\n", GetUuartBaudrate(UUART1));
-    } else if(UUART_GET_PROT_STATUS(UUART1) & UUART_PROTSTS_ABERRSTS_Msk) {
+    }
+    else if(UUART_GET_PROT_STATUS(UUART1) & UUART_PROTSTS_ABERRSTS_Msk)
+    {
         /* Clear auto baud rate detect time-out flag */
         UUART_CLR_PROT_INT_FLAG(UUART1, UUART_PROTSTS_ABERRSTS_Msk);
         printf("Error!\n");

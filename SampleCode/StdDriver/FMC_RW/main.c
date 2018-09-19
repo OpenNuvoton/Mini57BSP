@@ -1,13 +1,13 @@
 /******************************************************************************
  * @file     main.c
  * @version  V1.00
- * $Revision: 1 $
- * $Date: 17/04/19 7:49p $ 
+ * $Revision: 2 $
+ * $Date: 18/07/17 4:44p $ 
  * @brief    Show FMC read flash IDs, erase, read, and write functions.
  *
  * @note
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
-*****************************************************************************/   
+*****************************************************************************/
 #include <stdio.h>
 #include "Mini57Series.h"
 #include "fmc.h"
@@ -21,32 +21,32 @@ void SYS_Init(void)
 {
     /* Unlock protected registers */
     SYS_UnlockReg();
-	
-		/* Enable 48MHz HIRC */
-    CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk; 	
+    
+    /* Enable 48MHz HIRC */
+    CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);     
-	
-		/* HCLK Clock source from HIRC */
-		CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
-	
-	  /* Enable USCI0 IP clock */
-		CLK->APBCLK = CLK->APBCLK | CLK_APBCLK_USCI0CKEN_Msk;	
+    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+    
+    /* HCLK Clock source from HIRC */
+    CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
+
+    /* Enable USCI0 IP clock */
+    CLK_EnableModuleClock(USCI0_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
     SystemCoreClockUpdate();
-	
-		/* USCI-Uart0-GPD5(TX) + GPD6(RX) */
-    /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */	
-	  SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);	
-	
-		/* Set GPD5 as output mode and GPD6 as Input mode */ 
-		PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);	
-	
+
+    /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
+    /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
+    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+
+    /* Set GPD5 as output mode and GPD6 as Input mode */
+    PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
+
     /* Lock protected registers */
-    SYS_LockReg();	
+    SYS_LockReg();
 }
 
 
@@ -102,13 +102,13 @@ void run_crc32_checksum()
         printf("  SPROM0 CRC32 checksum .................. [0x%08x]\n", chksum);
     else
         printf("  SPROM0 CRC32 checksum .................. ERROR!!\n");
-		
+
     if (FMC_GetCRC32Sum(FMC_SPROM1_BASE, FMC_SPROM_SIZE, &chksum) == 0)
         printf("  SPROM1 CRC32 checksum .................. [0x%08x]\n", chksum);
     else
         printf("  SPROM1 CRC32 checksum .................. ERROR!!\n");
 
-		if (FMC_GetCRC32Sum(FMC_SPROM2_BASE, FMC_SPROM_SIZE, &chksum) == 0)
+    if (FMC_GetCRC32Sum(FMC_SPROM2_BASE, FMC_SPROM_SIZE, &chksum) == 0)
         printf("  SPROM2 CRC32 checksum .................. [0x%08x]\n", chksum);
     else
         printf("  SPROM2 CRC32 checksum .................. ERROR!!\n");
@@ -133,13 +133,13 @@ int32_t  verify_data(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pat
     uint32_t    u32data;
     
     for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4) 
-    {     
+    {
         u32data = FMC_Read(u32Addr);
         if (u32data != u32Pattern)
         { 
            printf("\nFMC_Read data verify failed at address 0x%x, read=0x%x, expect=0x%x\n", u32Addr, u32data, u32Pattern);
-           return -1; 
-        }         
+           return -1;
+        }
     }
     return 0;
 }
@@ -154,10 +154,10 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
         printf("    Flash test address: 0x%x    \r", u32Addr);
 
         /* Erase page */
-				if(u32Addr >= FMC_SPROM0_BASE)
-						FMC_Erase_SPROM(u32Addr);
-				else
-						FMC_Erase(u32Addr);
+        if(u32Addr >= FMC_SPROM0_BASE)
+            FMC_Erase_SPROM(u32Addr);
+        else
+            FMC_Erase(u32Addr);
         
         /* Verify if page contents are all 0xFFFFFFFF */
         if (verify_data(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, 0xFFFFFFFF) < 0)
@@ -180,10 +180,10 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             return -1;
         }
 
-				if(u32Addr >= FMC_SPROM0_BASE)
-						FMC_Erase_SPROM(u32Addr);
-				else
-						FMC_Erase(u32Addr);
+        if(u32Addr >= FMC_SPROM0_BASE)
+            FMC_Erase_SPROM(u32Addr);
+        else
+            FMC_Erase(u32Addr);
         
         /* Verify if page contents are all 0xFFFFFFFF */
         if (verify_data(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, 0xFFFFFFFF) < 0)
@@ -208,9 +208,9 @@ int main()
 
     /* Lock protected registers */
     SYS_LockReg();
-	
+
     /* Init USCI UART0 to 115200-8n1 for print message */
-		UUART_Open(UUART0, 115200);	
+    UUART_Open(UUART0, 115200);
 
     printf("\n\n");
     printf("+----------------------------------------+\n");

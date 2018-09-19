@@ -17,16 +17,16 @@ void SYS_Init(void)
     SYS_UnlockReg();
 
     /* Enable 48MHz HIRC */
-    CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
+    CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
-    CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
+    CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
 
     /* Enable USCI0 IP clock */
-    CLK->APBCLK = CLK->APBCLK | CLK_APBCLK_USCI0CKEN_Msk;
+    CLK_EnableModuleClock(USCI0_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
@@ -34,10 +34,12 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) |
+                   (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
-    PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
+    GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
+    GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -56,7 +58,6 @@ void SYS_Init(void)
 uint32_t PAIntFlag=0, PBIntFlag=0, PCIntFlag=0, PDIntFlag=0;
 void GPABCD_IRQHandler(void)
 {
-
     PAIntFlag = GPIO_GET_INT_FLAG(PA, 0xF);
     PBIntFlag = GPIO_GET_INT_FLAG(PB, 0xF);
     PCIntFlag = GPIO_GET_INT_FLAG(PC, 0xF);
@@ -67,12 +68,6 @@ void GPABCD_IRQHandler(void)
     GPIO_CLR_INT_FLAG(PB, PBIntFlag);
     GPIO_CLR_INT_FLAG(PC, PCIntFlag);
     GPIO_CLR_INT_FLAG(PD, PDIntFlag);
-
-    /*
-    printf("GPABCD_IRQHandler() ...\n");
-    printf("Interrupt Flag PA=0x%08X, PB=0x%08X, PC=0x%08X, PD=0x%08X\n",
-        PAIntFlag, PBIntFlag, PCIntFlag, PDIntFlag);
-    */
 }
 
 

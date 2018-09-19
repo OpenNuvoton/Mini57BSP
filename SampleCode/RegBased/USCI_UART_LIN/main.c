@@ -26,9 +26,7 @@ uint8_t g_u8SendData[12] ;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-extern char GetChar(void);
 void LIN_FunctionTest(void);
-void LIN_FunctionTestUsingLinCtlReg(void);
 void LIN_MasterTest(uint32_t u32id, uint32_t u32ModeSel);
 void LIN_SendHeader(uint32_t u32id);
 void LIN_SendResponse(int32_t checkSumOption, uint32_t *pu32TxBuf);
@@ -64,7 +62,13 @@ void LIN_FunctionTest()
     uint32_t u32Item;
 
     /* Set UUART Configuration, LIN Max Speed is 20K */
-    UUART_SetLine_Config(UUART1, 9600, UUART_WORD_LEN_8, UUART_PARITY_NONE, UUART_STOP_BIT_1);
+    UUART1->BRGEN = (624 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 9600bps */
+
+    /* Set USCI_UART line configuration */
+    UUART1->LINECTL = (UUART1->LINECTL & ~UUART_LINECTL_DWIDTH_Msk) | UUART_WORD_LEN_8;
+    UUART1->PROTCTL = (UUART1->PROTCTL & ~(UUART_PROTCTL_STICKEN_Msk | UUART_PROTCTL_EVENPARITY_Msk |
+                                           UUART_PROTCTL_PARITYEN_Msk)) | UUART_PARITY_NONE;
+    UUART1->PROTCTL = (UUART1->PROTCTL & ~UUART_PROTCTL_STOPB_Msk ) | UUART_STOP_BIT_1;
 
     /* === CASE 1====
         The sample code will send a LIN header with a 12-bit break field,
@@ -83,11 +87,13 @@ void LIN_FunctionTest()
         Measurement the UUART1 Tx pin to check it.
     */
 
-    do {
+    do
+    {
         LIN_TestItem();
         u32Item = getchar();
         printf("%c\n", u32Item);
-        switch(u32Item) {
+        switch(u32Item)
+        {
         case '1':
             LIN_SendHeader(0x30);
             break;
@@ -100,9 +106,10 @@ void LIN_FunctionTest()
         default:
             break;
         }
-    } while(u32Item != 27);
+    }
+    while(u32Item != 27);
 
-    UUART_Close(UUART1);
+    UUART1->CTL = 0;
 
     printf("\nLIN Sample Code End.\n");
 
@@ -144,7 +151,8 @@ uint32_t GetCheckSumValue(uint8_t *pu8Buf, uint32_t u32ModeSel)
 {
     uint32_t i, CheckSum = 0;
 
-    for(i = u32ModeSel; i <= 9; i++) {
+    for(i = u32ModeSel; i <= 9; i++)
+    {
         CheckSum += pu8Buf[i];
         if(CheckSum >= 256)
             CheckSum -= 255;
@@ -159,7 +167,8 @@ uint8_t ComputeChksumValue(uint8_t *pu8Buf, uint32_t u32ByteCnt)
 {
     uint32_t i, CheckSum = 0;
 
-    for(i = 0 ; i < u32ByteCnt; i++) {
+    for(i = 0 ; i < u32ByteCnt; i++)
+    {
         CheckSum += pu8Buf[i];
         if(CheckSum >= 256)
             CheckSum -= 255;
@@ -182,7 +191,8 @@ void LIN_SendHeader(uint32_t u32id)
     g_u8SendData[g_i32pointer++] = 0x55 ;                   // SYNC Field
     g_u8SendData[g_i32pointer++] = GetParityValue(u32id);   // ID+Parity Field
 
-    for(u32Count = 0; u32Count < 2; u32Count++) {
+    for(u32Count = 0; u32Count < 2; u32Count++)
+    {
         while(!(UUART1->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk));   /* Wait Tx empty */
 
         UUART1->TXDAT = g_u8SendData[u32Count];
@@ -203,7 +213,8 @@ void LIN_SendResponse(int32_t checkSumOption, uint32_t *pu32TxBuf)
 
     g_u8SendData[g_i32pointer++] = GetCheckSumValue(g_u8SendData, checkSumOption) ; //CheckSum Field
 
-    for(i32 = 0; i32 < 9; i32++) {
+    for(i32 = 0; i32 < 9; i32++)
+    {
         while(!(UUART1->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk));   /* Wait Tx empty */
 
         UUART1->TXDAT = g_u8SendData[i32 + 2];
@@ -228,7 +239,8 @@ void LIN_SendResponseWithByteCnt(int32_t checkSumOption, uint32_t *pu32TxBuf, ui
         g_u8SendData[g_i32pointer++] = GetCheckSumValue(&g_u8SendData[1], (u32ByteCnt + 1)) ; //CheckSum Field
 
     /* Send data and check sum */
-    for(i32 = 0; i32 < 9; i32++) {
+    for(i32 = 0; i32 < 9; i32++)
+    {
         while(!(UUART1->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk));   /* Wait Tx empty */
 
         UUART1->TXDAT = g_u8SendData[i32 + 2];
@@ -244,7 +256,7 @@ void SYS_Init(void)
     CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+    while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) != CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
     CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
@@ -258,13 +270,13 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
 
     /* Set GPD multi-function pins for USCI UART1 GPD3(TX) and GPD4(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk)) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
 
     /* Set GPD3 as output mode and GPD4 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE3_Msk | GPIO_MODE_MODE4_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE3_Pos);
@@ -286,7 +298,7 @@ void UUART0_Init(void)
     UUART0->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
     UUART0->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
     UUART0->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
-    UUART0->BRGEN = (25 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos) | (1 << UUART_BRGEN_PDSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART0->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
     UUART0->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 }
 
@@ -303,7 +315,7 @@ void UUART1_Init(void)
     UUART1->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
     UUART1->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
     UUART1->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
-    UUART1->BRGEN = (25 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos) | (1 << UUART_BRGEN_PDSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART1->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
     UUART1->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 }
 

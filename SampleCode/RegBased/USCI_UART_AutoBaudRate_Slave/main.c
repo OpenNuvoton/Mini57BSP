@@ -18,8 +18,6 @@
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-int32_t main(void);
-extern char GetChar(void);
 void USCI_AutoBaudRate_RxTest(void);
 
 void SYS_Init(void)
@@ -31,7 +29,7 @@ void SYS_Init(void)
     CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for 48MHz clock ready */
-    CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
+    while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) != CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
     CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
@@ -45,13 +43,13 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
 
     /* Set GPD multi-function pins for USCI UART1 GPD3(TX) and GPD4(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk)) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
 
     /* Set GPD3 as output mode and GPD4 as Input mode */
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE3_Msk | GPIO_MODE_MODE4_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE3_Pos);
@@ -73,7 +71,7 @@ void UUART0_Init(void)
     UUART0->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
     UUART0->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
     UUART0->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
-    UUART0->BRGEN = (25 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos) | (1 << UUART_BRGEN_PDSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART0->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
     UUART0->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 }
 
@@ -90,7 +88,7 @@ void UUART1_Init(void)
     UUART1->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Set UART function mode */
     UUART1->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */
     UUART1->DATIN0 = (2 << UUART_DATIN0_EDGEDET_Pos);                           /* Set falling edge detection */
-    UUART1->BRGEN = (25 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos) | (1 << UUART_BRGEN_PDSCNT_Pos); /* Set UART baud rate as 115200bps */
+    UUART1->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
     UUART1->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 }
 
@@ -130,7 +128,7 @@ uint32_t GetUuartBaudrate(UUART_T *uuart)
     uint32_t u32PCLKFreq, u32PDSCnt, u32DSCnt, u32ClkDiv;
 
     /* Get PCLK frequency */
-    u32PCLKFreq = CLK_GetPCLKFreq();
+    u32PCLKFreq = SystemCoreClock;
 
     /* Get pre-divider counter */
     u32PDSCnt = ((uuart->BRGEN & UUART_BRGEN_PDSCNT_Msk) >> UUART_BRGEN_PDSCNT_Pos);
@@ -184,11 +182,14 @@ void USCI_AutoBaudRate_RxTest()
     /* Wait until auto baud rate detect finished or time-out */
     while(UUART1->PROTCTL & UUART_PROTCTL_ABREN_Msk);
 
-    if(UUART1->PROTSTS & UUART_PROTSTS_ABRDETIF_Msk) {
+    if(UUART1->PROTSTS & UUART_PROTSTS_ABRDETIF_Msk)
+    {
         /* Clear auto baud rate detect finished flag */
         UUART1->PROTSTS = UUART_PROTSTS_ABRDETIF_Msk;
         printf("Baud rate is %dbps.\n", GetUuartBaudrate(UUART1));
-    } else if(UUART1->PROTSTS & UUART_PROTSTS_ABERRSTS_Msk) {
+    }
+    else if(UUART1->PROTSTS & UUART_PROTSTS_ABERRSTS_Msk)
+    {
         /* Clear auto baud rate detect time-out flag */
         UUART1->PROTSTS = UUART_PROTSTS_ABERRSTS_Msk;
         printf("Error!\n");

@@ -18,8 +18,6 @@
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-int32_t main(void);
-extern char GetChar(void);
 void USCI_AutoBaudRate_TxTest(void);
 
 void SYS_Init(void)
@@ -46,14 +44,14 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
     GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set GPD multi-function pins for USCI UART1 GPD3(TX) and GPD4(RX) */
-    SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD3MFP_Msk | SYS_GPD_MFP_PD4MFP_Msk)) | (SYS_GPD_MFP_PD3_UART1_TXD | SYS_GPD_MFP_PD4_UART1_RXD);
 
     /* Set GPD3 as output mode and GPD4 as Input mode */
     GPIO_SetMode(PD, BIT3, GPIO_MODE_OUTPUT);
@@ -142,13 +140,15 @@ void USCI_AutoBaudRate_TxTest(void)
     printf("|    calculates correct baud rate.                          |\n");
     printf("+-----------------------------------------------------------+\n");
 
-    do {
+    do
+    {
         USCI_AutoBaudRate_TestItem();
         u32Item = getchar();
         printf("%c\n", u32Item);
 
         /* Set different baud rate */
-        switch(u32Item) {
+        switch(u32Item)
+        {
         case '1':
             UUART_Open(UUART1, 38400);
             break;
@@ -164,7 +164,8 @@ void USCI_AutoBaudRate_TxTest(void)
         u8Char = 0x55;
         UUART_Write(UUART1, &u8Char, 1);
 
-    } while(u32Item != 27);
+    }
+    while(u32Item != 27);
 
 }
 

@@ -17,16 +17,16 @@ void SYS_Init(void)
     SYS_UnlockReg();
 
     /* Enable 48MHz HIRC */
-    CLK->PWRCTL = CLK->PWRCTL | CLK_PWRCTL_HIRCEN_Msk;
+    CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
 
     /* HCLK Clock source from HIRC */
-    CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
+    CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
 
     /* Enable USCI0 IP clock */
-    CLK->APBCLK = CLK->APBCLK | CLK_APBCLK_USCI0CKEN_Msk;
+    CLK_EnableModuleClock(USCI0_MODULE);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
@@ -34,17 +34,19 @@ void SYS_Init(void)
 
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) |
+                   (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
     /* Set GPD5 as output mode and GPD6 as Input mode */
-    PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
+    GPIO_SetMode(PD, BIT5, GPIO_MODE_OUTPUT);
+    GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Lock protected registers */
     SYS_LockReg();
 }
 
 
-void delay1s()
+void delay2s()
 {
     CLK_SysTickDelay(300000);  /* delay 300ms */
     CLK_SysTickDelay(300000);  /* delay 300ms */
@@ -82,28 +84,30 @@ int main()
 
     printf("CLKO = HCLK / 1 = %dHz.\n", SystemCoreClock);
     CLK_EnableCKO(CLK_CLKO_SRC_HCLK, 0, 1);
-    delay1s();
+    delay2s();
 
     printf("CLKO = HCLK / 2^(0+1) = %dHz.\n", SystemCoreClock/2);
     CLK_EnableCKO(CLK_CLKO_SRC_HCLK, 0, 0);
-    delay1s();
+    delay2s();
 
     printf("CLKO = HCLK / 2^(2+1) = %dHz.\n", SystemCoreClock/8);
     CLK_EnableCKO(CLK_CLKO_SRC_HCLK, 2, 0);
-    delay1s();
+    delay2s();
 
     SYS_UnlockReg();
 
-    printf("CLKO = HXT / 1 = %dHz.\n", __HXT);
     CLK_EnableXtalRC(CLK_PWRCTL_HXT_EN);
+    CLK_WaitClockReady(CLK_STATUS_XTLSTB_Msk);
+    printf("CLKO = HXT / 1 = %dHz.\n", __HXT);
     CLK_EnableCKO(CLK_CLKO_SRC_EXT, 0, 1);
-    delay1s();
+    delay2s();
     CLK_DisableXtalRC(CLK_PWRCTL_HXT_EN);
 
-    printf("CLKO = HXT / 2^(1+1) = %dHz.\n", __HXT/4);
     CLK_EnableXtalRC(CLK_PWRCTL_HXT_EN);
+    CLK_WaitClockReady(CLK_STATUS_XTLSTB_Msk);
+    printf("CLKO = HXT / 2^(1+1) = %dHz.\n", __HXT/4);
     CLK_EnableCKO(CLK_CLKO_SRC_EXT, 1, 0);
-    delay1s();
+    delay2s();
     CLK_DisableXtalRC(CLK_PWRCTL_HXT_EN);
 
     SYS_LockReg();
