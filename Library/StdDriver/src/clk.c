@@ -56,7 +56,7 @@ void CLK_DisableCKO(void)
 void CLK_EnableCKO(uint32_t u32ClkSrc, uint32_t u32ClkDiv, uint32_t u32ClkDivBy1En)
 {
     /* Select CKO clock source */
-    CLK_SetModuleClock(CLKO_MODULE, u32ClkSrc, NULL);
+    CLK_SetModuleClock(CLKO_MODULE, u32ClkSrc, 0UL);
 
     /* CKO = clock source / 2^(u32ClkDiv + 1) */
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk))
