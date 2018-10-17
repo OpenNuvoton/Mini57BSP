@@ -11,7 +11,9 @@
 
 #include <stdio.h>
 #include "Mini57Series.h"
-
+# if defined (__GNUC__)
+extern void initialise_monitor_handles(void);
+#endif
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Main Function                                                                                            */
@@ -32,6 +34,9 @@ int32_t main()
         NOTE1: HardFault_Handler handler is implemented in retarget.c when semihost enabled.
         NOTE2: Semihost only works with Nuvoton NuLink ICE Dongle.
     */
+# if defined (__GNUC__)
+    initialise_monitor_handles();
+#endif
 
     printf("\n Start SEMIHOST test: \n");
 
