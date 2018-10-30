@@ -59,7 +59,7 @@ void SYS_Init(void)
     /*---------------------------------------------------------------------------------------------------------*/
     /* Set GPB multi-function pins GPB0 ~ GPB2 for ECAP input channel IC0 ~ IC2 */
     SYS->GPB_MFP = (SYS->GPB_MFP & ~(SYS_GPB_MFP_PB0MFP_Msk | SYS_GPB_MFP_PB1MFP_Msk | SYS_GPB_MFP_PB2MFP_Msk)) |
-                   (SYS_GPB_MFP_PB0_ECAP0 | SYS_GPB_MFP_PB1_ECAP1 | SYS_GPB_MFP_PB2_ECAP2);
+                   (SYS_GPB_MFP_PB0_ECAP_P0 | SYS_GPB_MFP_PB1_ECAP_P1 | SYS_GPB_MFP_PB2_ECAP_P2);
     GPIO_SetMode(PB, BIT0, GPIO_MODE_INPUT);
     GPIO_SetMode(PB, BIT1, GPIO_MODE_INPUT);
     GPIO_SetMode(PB, BIT2, GPIO_MODE_INPUT);

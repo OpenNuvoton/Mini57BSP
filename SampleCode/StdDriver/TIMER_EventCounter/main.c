@@ -52,7 +52,7 @@ void SYS_Init(void)
     GPIO_SetMode(PD, BIT6, GPIO_MODE_INPUT);
 
     /* Set Timer event counting pin */
-    SYS->GPB_MFP = SYS_GPB_MFP_PB3_T0;
+    SYS->GPB_MFP = SYS_GPB_MFP_PB3_TM0;
 
     /* Set GPB3 as Input mode */
     GPIO_SetMode(PB, BIT3, GPIO_MODE_INPUT);

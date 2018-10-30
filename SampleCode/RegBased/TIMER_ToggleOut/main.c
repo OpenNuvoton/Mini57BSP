@@ -44,7 +44,7 @@ void SYS_Init(void)
     PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
 
     /* Set Timer event counting pin */
-    SYS->GPB_MFP = (SYS->GPB_MFP & ~SYS_GPB_MFP_PB3MFP_Msk) | SYS_GPB_MFP_PB3_T0;
+    SYS->GPB_MFP = (SYS->GPB_MFP & ~SYS_GPB_MFP_PB3MFP_Msk) | SYS_GPB_MFP_PB3_TM0;
 
     /* Set GPB3 as output mode */
     PB->MODE = (PB->MODE & ~(GPIO_MODE_MODE3_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE3_Pos);
