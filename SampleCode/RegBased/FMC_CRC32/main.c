@@ -47,7 +47,7 @@ void SYS_Init(void)
 
 uint32_t UUART_Open(UUART_T* uart, uint32_t u32baudrate)
 {
-    int32_t multiple; 
+    int32_t multiple;
 
     uart->CTL = 0x02;
 
@@ -99,19 +99,19 @@ int main()
     /* u32Data = FMC_ReadCID()  */
     FMC->ISPCMD = FMC_ISPCMD_READ_CID;
     FMC->ISPADDR = 0x0;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
-    u32Data = FMC->ISPDAT; 
-    
+    u32Data = FMC->ISPDAT;
+
     printf("  Company ID ............................ [0x%08x]\n", u32Data);
 
     /* Read product ID. */
     /* u32Data = FMC_ReadPID()  */
     FMC->ISPCMD = FMC_ISPCMD_READ_PID;
     FMC->ISPADDR = 0x04;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
-    u32Data = FMC->ISPDAT; 
+    u32Data = FMC->ISPDAT;
 
     printf("  Product ID ............................ [0x%08x]\n", u32Data);
 
@@ -119,11 +119,11 @@ int main()
     /* printf("  User Config 0 ......................... [0x%08x]\n", FMC_Read(FMC_CONFIG_BASE)) */
     FMC->ISPCMD = FMC_ISPCMD_READ;
     FMC->ISPADDR = FMC_CONFIG_BASE;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
     u32Data = FMC->ISPDAT;
     printf("  User Config 0 ......................... [0x%08x]\n", u32Data);
-    
+
     /* Read User Configuration CONFIG1 */
     /* printf("  User Config 1 ......................... [0x%08x]\n", FMC_Read(FMC_CONFIG_BASE+4)) */
     FMC->ISPCMD = FMC_ISPCMD_READ;
@@ -141,7 +141,7 @@ int main()
 
     printf("\nLDROM (0x100000 ~ 0x101200) CRC32 checksum =>  ");
 
-    /* 
+    /*
      *  Request FMC hardware to run CRC32 calculation on flash range from FMC_LDROM_BASE and
      *  length is FMC_LDROM_SIZE. The CRC32 calculation result will be put in u32ChkSum.
      */
@@ -163,8 +163,8 @@ int main()
 
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_LDROM_BASE;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-    
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -173,7 +173,7 @@ int main()
         ret = -1;
         goto checksum0;
     }
-    
+
     u32ChkSum = FMC->ISPDAT;
 
 checksum0:
@@ -185,8 +185,8 @@ checksum0:
     printf("0x%x\n", u32ChkSum);       /* print out LDROM CRC32 check sum value */
 
     printf("\nSPROM (0x200000 ~ 0x200200) CRC32 checksum =>  ");
-    
-    /* 
+
+    /*
      *  Request FMC hardware to run CRC32 calculation on flash range from FMC_SPROM_BASE and
      *  length is FMC_SPROM_SIZE. The CRC32 calculation result will be put in u32ChkSum.
      */
@@ -195,8 +195,8 @@ checksum0:
     FMC->ISPCMD = FMC_ISPCMD_CAL_CRC32;
     FMC->ISPADDR = FMC_SPROM0_BASE;
     FMC->ISPDAT  = FMC_SPROM_SIZE;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-    
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -208,8 +208,8 @@ checksum0:
 
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_SPROM0_BASE;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-    
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -218,12 +218,12 @@ checksum0:
         ret = -1;
         goto checksum1;
     }
-    
+
     u32ChkSum = FMC->ISPDAT;
 
 checksum1:
 
-    if (ret < 0)  
+    if (ret < 0)
     {
         printf("Failed on calculating SPROM CRC32 checksum!\n");
         goto lexit;
@@ -232,7 +232,7 @@ checksum1:
 
     printf("\nAPROM (0x0 ~ 0x75FF) CRC32 checksum =>  ");
 
-    /* 
+    /*
      *  Request FMC hardware to run CRC32 calculation on flash range from FMC_APROM_BASE and
      *  length is FMC_APROM_END. The CRC32 calculation result will be put in u32ChkSum.
      */
@@ -241,8 +241,8 @@ checksum1:
     FMC->ISPCMD = FMC_ISPCMD_CAL_CRC32;
     FMC->ISPADDR = FMC_APROM_BASE;
     FMC->ISPDAT  = (FMC_APROM_END - FMC_APROM_BASE);
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-    
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -254,17 +254,17 @@ checksum1:
 
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_APROM_BASE;
-    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk; 
-    
+    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
     {
         FMC->ISPCTL |= FMC_ISPCTL_ISPFF_Msk;
         ret = -1;
-       goto checksum2;
+        goto checksum2;
     }
-    
+
     u32ChkSum = FMC->ISPDAT;
 
 checksum2:

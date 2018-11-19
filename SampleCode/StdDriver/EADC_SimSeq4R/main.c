@@ -88,13 +88,13 @@ int main()
 
     printf("Set GPB0 pin as ADC0 AIN0 input pin.\n");
     SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB0MFP_Msk))
-                 | SYS_GPB_MFP_PB0_ADC0_CH0;
+                   | SYS_GPB_MFP_PB0_ADC0_CH0;
     GPIO_SetMode(PB, BIT0, GPIO_MODE_INPUT);
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT0);
 
     printf("Set GPB4 pin as ADC1 BIN0 input pin.\n");
     SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB4MFP_Msk))
-                 | SYS_GPB_MFP_PB4_ADC1_CH0;
+                   | SYS_GPB_MFP_PB4_ADC1_CH0;
     GPIO_SetMode(PB, BIT4, GPIO_MODE_INPUT);
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT4);
 
@@ -108,11 +108,11 @@ int main()
     EADC_ConfigSampleModule(EADC, EADC_EADC1_0, EADC_SOFTWARE_TRIGGER, 0);
 
     /* Configure EADC conversion mode to Simultaneous Sequential 4R Mode */
-	/* EADC0 use channel 6 (Band-Gap) as second input, */
-	/* EADC1 use channel 3 (AIN0) as second input. */
+    /* EADC0 use channel 6 (Band-Gap) as second input, */
+    /* EADC1 use channel 3 (AIN0) as second input. */
     printf("Set EADC0 second input to channel 6 Band gap.\n");
     printf("Set EADC1 second input to channel 3 AIN0 (GPB0)\n");
-	EADC_SET_SIMULTANEOUS_4R_MODE(EADC, EADC_EADC0_6, EADC_EADC1_3);
+    EADC_SET_SIMULTANEOUS_4R_MODE(EADC, EADC_EADC0_6, EADC_EADC1_3);
 
     /* Configure EADC sample time to 6 EADC clocks */
     EADC_SetExtendSampleTime(EADC, 0, 5);
@@ -125,7 +125,7 @@ int main()
         EADC_START_CONV(EADC, EADC_CTL_ADC0SWTRG_Msk);              /* software trigger EADC0 */
         while (!EADC_GET_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk));    /* Simultaneous Sequential 4R Mode: wait EADC0 completed here for both EADC0 and EADC1 conversion. */
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk);
-		/* MUST read and keep valid flag in DAT register before any others read it. */
+        /* MUST read and keep valid flag in DAT register before any others read it. */
         dataVaidFlag = EADC_GET_DATA_VALID_FLAG(EADC, EADC_BIT_MASK_EADC0 | EADC_BIT_MASK_EADC1 | EADC_BIT_MASK_EADC0_DAT1 | EADC_BIT_MASK_EADC1_DAT1);
 
         printf("Get EADC0 FIFO 0 data = %4d (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0), (dataVaidFlag & EADC_BIT_MASK_EADC0) ? "Yes" : "No");

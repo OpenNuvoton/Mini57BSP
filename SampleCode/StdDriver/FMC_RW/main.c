@@ -2,7 +2,7 @@
  * @file     main.c
  * @version  V1.00
  * $Revision: 2 $
- * $Date: 18/07/17 4:44p $ 
+ * $Date: 18/07/17 4:44p $
  * @brief    Show FMC read flash IDs, erase, read, and write functions.
  *
  * @note
@@ -21,13 +21,13 @@ void SYS_Init(void)
 {
     /* Unlock protected registers */
     SYS_UnlockReg();
-    
+
     /* Enable 48MHz HIRC */
     CLK_EnableXtalRC(CLK_PWRCTL_HIRC_EN);
 
     /* Waiting for 48MHz clock ready */
     CLK_WaitClockReady(CLK_STATUS_HIRCSTB_Msk);
-    
+
     /* HCLK Clock source from HIRC */
     CLK_SetHCLK(CLK_HCLK_SRC_HIRC, CLK_CLKDIV_HCLK(1));
 
@@ -53,24 +53,24 @@ void SYS_Init(void)
 static int  set_data_flash_base(uint32_t u32DFBA)
 {
     uint32_t   au32Config[2];
-    
+
     if (FMC_ReadConfig(au32Config, 2) < 0)
     {
         printf("\nRead User Config failed!\n");
         return -1;
     }
-        
+
     if ((!(au32Config[0] & 0x1)) && (au32Config[1] == u32DFBA))
         return 0;
-        
+
     FMC_ENABLE_CFG_UPDATE();
-        
+
     au32Config[0] &= ~0x1;
     au32Config[1] = u32DFBA;
 
     if (FMC_WriteConfig(au32Config, 2) < 0)
         return -1;
-        
+
     printf("\nSet Data Flash base as 0x%x.\n", DATA_FLASH_TEST_BASE);
 
     /* Perform chip reset to make new User Config take effect */
@@ -118,8 +118,8 @@ void run_crc32_checksum()
 int32_t fill_data_pattern(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pattern)
 {
     uint32_t u32Addr;
-    
-    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4) 
+
+    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4)
     {
         FMC_Write(u32Addr, u32Pattern);
     }
@@ -131,14 +131,14 @@ int32_t  verify_data(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pat
 {
     uint32_t    u32Addr;
     uint32_t    u32data;
-    
-    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4) 
+
+    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4)
     {
         u32data = FMC_Read(u32Addr);
         if (u32data != u32Pattern)
-        { 
-           printf("\nFMC_Read data verify failed at address 0x%x, read=0x%x, expect=0x%x\n", u32Addr, u32data, u32Pattern);
-           return -1;
+        {
+            printf("\nFMC_Read data verify failed at address 0x%x, read=0x%x, expect=0x%x\n", u32Addr, u32data, u32Pattern);
+            return -1;
         }
     }
     return 0;
@@ -148,7 +148,7 @@ int32_t  verify_data(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pat
 int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pattern)
 {
     uint32_t    u32Addr;
-    
+
     for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += FMC_FLASH_PAGE_SIZE)
     {
         printf("    Flash test address: 0x%x    \r", u32Addr);
@@ -158,14 +158,14 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             FMC_Erase_SPROM(u32Addr);
         else
             FMC_Erase(u32Addr);
-        
+
         /* Verify if page contents are all 0xFFFFFFFF */
         if (verify_data(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, 0xFFFFFFFF) < 0)
         {
             printf("\nPage 0x%x erase verify failed!\n", u32Addr);
             return -1;
         }
-        
+
         /* Write test pattern to fill the whole page */
         if (fill_data_pattern(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, u32Pattern) < 0)
         {
@@ -184,14 +184,14 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             FMC_Erase_SPROM(u32Addr);
         else
             FMC_Erase(u32Addr);
-        
+
         /* Verify if page contents are all 0xFFFFFFFF */
         if (verify_data(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, 0xFFFFFFFF) < 0)
         {
             printf("\nPage 0x%x erase verify failed!\n", u32Addr);
             return -1;
         }
-    } 
+    }
     printf("\r    Flash Test Passed.          \n");
     return 0;
 }
@@ -238,7 +238,7 @@ int main()
         printf("  WARNING: The driver sample code must execute in AP mode!\n");
         goto lexit;
     }
-    
+
     u32Data = FMC_ReadCID();
     printf("  Company ID ............................ [0x%08x]\n", u32Data);
 
@@ -252,7 +252,8 @@ int main()
     }
 
     for (i = 0; i < 4; i++)
-    {       u32Data = FMC_ReadUCID(i);
+    {
+        u32Data = FMC_ReadUCID(i);
         printf("  Unique Customer ID %d .................. [0x%08x]\n", i, u32Data);
     }
 
@@ -263,7 +264,7 @@ int main()
     /* Read Data Flash base address */
     u32Data = FMC_ReadDataFlashBaseAddr();
     printf("  Data Flash Base Address ............... [0x%08x]\n", u32Data);
-    
+
     run_crc32_checksum();
 
     printf("\n\nLDROM test =>\n");
@@ -310,10 +311,10 @@ lexit:
 
     /* Lock protected registers */
     SYS_LockReg();
-    
+
     printf("\nFMC Sample Code Completed.\n");
     while (1);
-    
+
 }
 
 /*** (C) COPYRIGHT 2017 Nuvoton Technology Corp. ***/

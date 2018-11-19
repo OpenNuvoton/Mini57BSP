@@ -2,11 +2,11 @@
  * @file     APROM_main.c
  * @version  V1.00
  * $Revision: 3 $
- * $Date: 18/07/17 4:47p $ 
- * @brief    This sample code includes LDROM image (fmc_ld_iap) 
+ * $Date: 18/07/17 4:47p $
+ * @brief    This sample code includes LDROM image (fmc_ld_iap)
  *           and APROM image (fmc_ap_main).
- *           It shows how to branch between APROM and LDROM. To run 
- *           this sample code, the boot mode must be "Boot from APROM 
+ *           It shows how to branch between APROM and LDROM. To run
+ *           this sample code, the boot mode must be "Boot from APROM
  *           with IAP".
  *
  *
@@ -56,13 +56,13 @@ void SYS_Init(void)
 static int  set_IAP_boot_mode(void)
 {
     uint32_t  au32Config[2];
-    
+
     if (FMC_ReadConfig(au32Config, 2) < 0)
     {
         printf("\nRead User Config failed!\n");
         return -1;
     }
-        
+
     if (au32Config[0] & 0x40)
     {
         FMC_ENABLE_CFG_UPDATE();
@@ -88,9 +88,9 @@ __asm void __set_SP(uint32_t _sp)
 static int  load_image_to_flash(uint32_t image_base, uint32_t image_limit, uint32_t flash_addr, uint32_t max_size)
 {
     uint32_t   i, j, u32Data, u32ImageSize, *pu32Loader;
-    
+
     u32ImageSize = max_size;
-    
+
     printf("Program image to flash address 0x%x...", flash_addr);
     pu32Loader = (uint32_t *)image_base;
     for (i = 0; i < u32ImageSize; i += FMC_FLASH_PAGE_SIZE)
@@ -102,7 +102,7 @@ static int  load_image_to_flash(uint32_t image_base, uint32_t image_limit, uint3
         }
     }
     printf("OK.\n");
-    
+
     printf("Verify ...");
 
     /* Verify loader */
@@ -115,9 +115,9 @@ static int  load_image_to_flash(uint32_t image_base, uint32_t image_limit, uint3
             if (u32Data != pu32Loader[(i+j)/4])
             {
                 printf("data mismatch on 0x%x, [0x%x], [0x%x]\n", flash_addr + i + j, u32Data, pu32Loader[(i+j)/4]);
-                return -1;  
+                return -1;
             }
-            
+
             if (i + j >= u32ImageSize)
                 break;
         }
@@ -166,7 +166,7 @@ int main()
         printf("  WARNING: The driver sample code must execute in AP mode!\n");
         goto lexit;
     }
-    
+
     u32Data = FMC_ReadCID();
     printf("  Company ID ............................ [0x%08x]\n", u32Data);
 
@@ -178,7 +178,7 @@ int main()
     printf("  User Config 1 ......................... [0x%08x]\n", FMC_Read(FMC_CONFIG_BASE+4));
 
     do
-    {      
+    {
         printf("\n\n\n");
         printf("+----------------------------------------+\n");
         printf("|               Select                   |\n");
@@ -189,49 +189,50 @@ int main()
         printf("Please select...");
         u8Item = getchar();
         printf("%c\n", u8Item);
-        
+
         switch (u8Item)
         {
-            case '0':
-                FMC_ENABLE_LD_UPDATE();
-                if (load_image_to_flash((uint32_t)&loaderImage1Base, (uint32_t)&loaderImage1Limit, 
+        case '0':
+            FMC_ENABLE_LD_UPDATE();
+            if (load_image_to_flash((uint32_t)&loaderImage1Base, (uint32_t)&loaderImage1Limit,
                                     FMC_LDROM_BASE, FMC_LDROM_SIZE) != 0)
-                {
-                    printf("Load image to LDROM failed!\n");
-                    goto lexit;
-                }
-                FMC_DISABLE_LD_UPDATE();
-                break;
+            {
+                printf("Load image to LDROM failed!\n");
+                goto lexit;
+            }
+            FMC_DISABLE_LD_UPDATE();
+            break;
 
-            case '1':
-                printf("\n\nChange VECMAP and branch to LDROM...\n");
-                while(!IsDebugFifoEmpty()); /* Wait Tx empty */
-                /*  NOTE!
-                 *     Before change VECMAP, user MUST disable all interrupts.
-                 *     The following code CANNOT locate in address 0x0 ~ 0x200.
-                 */
-                
-                FMC_SetVectorPageAddr(FMC_LDROM_BASE);
-                /*  FMC->ISPCMD = FMC_ISPCMD_VECMAP;
-                    FMC->ISPADDR = FMC_LDROM_BASE;
-                    FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-                    while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk) ;*/
-                
-                func = (FUNC_PTR *)FMC_Read(FMC_LDROM_BASE + 4);
+        case '1':
+            printf("\n\nChange VECMAP and branch to LDROM...\n");
+            while(!IsDebugFifoEmpty()); /* Wait Tx empty */
+            /*  NOTE!
+             *     Before change VECMAP, user MUST disable all interrupts.
+             *     The following code CANNOT locate in address 0x0 ~ 0x200.
+             */
+
+            FMC_SetVectorPageAddr(FMC_LDROM_BASE);
+            /*  FMC->ISPCMD = FMC_ISPCMD_VECMAP;
+                FMC->ISPADDR = FMC_LDROM_BASE;
+                FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
+                while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk) ;*/
+
+            func = (FUNC_PTR *)FMC_Read(FMC_LDROM_BASE + 4);
 #ifdef __GNUC__                        /* for GNU C compiler */
-                u32Data = *(uint32_t *)FMC_LDROM_BASE;
-                asm("msr msp, %0" : : "r" (u32Data));
+            u32Data = *(uint32_t *)FMC_LDROM_BASE;
+            asm("msr msp, %0" : : "r" (u32Data));
 #else
-                __set_SP(*(uint32_t *)FMC_LDROM_BASE);
+            __set_SP(*(uint32_t *)FMC_LDROM_BASE);
 #endif
 
-                func();
-                break;
+            func();
+            break;
 
-            default :
-                continue;
+        default :
+            continue;
         }
-    } while (1);
+    }
+    while (1);
 
 
 lexit:
@@ -241,9 +242,9 @@ lexit:
 
     /* Lock protected registers */
     SYS_LockReg();
-    
+
     printf("\nFMC Sample Code Completed.\n");
-    
+
     while (1);
 }
 

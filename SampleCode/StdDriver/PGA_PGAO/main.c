@@ -52,13 +52,13 @@ void SYS_Init(void)
     /*---------------------------------------------------------------------------------------------------------*/
     /* Set GPB multi-function pins for PGA_I GPB3 */
     SYS->GPB_MFP = (SYS->GPB_MFP & ~(SYS_GPB_MFP_PB3MFP_Msk))
-                    | (SYS_GPB_MFP_PB3_PGA_I);
+                   | (SYS_GPB_MFP_PB3_PGA_I);
     /* The analog input port pins must be configured as input type before the PGA function is enabled. */
     GPIO_SetMode(PB, BIT3, GPIO_MODE_INPUT);
 
     /* Set GPC multi-function pins for PGA_O GPC3 */
     SYS->GPC_MFP = (SYS->GPC_MFP & ~(SYS_GPC_MFP_PC3MFP_Msk))
-                    | (SYS_GPC_MFP_PC3_PGA_O);
+                   | (SYS_GPC_MFP_PC3_PGA_O);
 
     /* Lock protected registers */
     SYS_LockReg();
@@ -86,27 +86,32 @@ int main()
     printf("Configure PGA with gain level x2.\n");
     PGA_Open(PGA, PGA_GAIN_2, 1);
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x1.\n");
     PGA_SET_GAIN(PGA, PGA_GAIN_1);
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x5.\n");
     PGA_SET_GAIN(PGA, PGA_GAIN_5);
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x7.\n");
     PGA_SET_GAIN(PGA, PGA_GAIN_7);
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to disable PGA_O pin ... \n");  getchar();
+    printf("Press any key to disable PGA_O pin ... \n");
+    getchar();
 
     printf("Configure PGA to disable PGA_O pin.\n");
     PGA_DISABLE_OUTPUT_PGAO(PGA);
     printf("The output pin GPC3 should has no signal.\n");
-    printf("Press any key to close PGA and exit ... \n");  getchar();
+    printf("Press any key to close PGA and exit ... \n");
+    getchar();
 
     PGA_Close(PGA);
     CLK_DisableModuleClock(PGA_MODULE);

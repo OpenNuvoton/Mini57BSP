@@ -54,7 +54,7 @@ void SYS_Init(void)
     /*---------------------------------------------------------------------------------------------------------*/
     /* Set GPA multi-function pins for EPWM Channel0 */
     SYS->GPA_MFP = (SYS->GPA_MFP & ~(SYS_GPA_MFP_PA0MFP_Msk)) |
-    			   (SYS_GPA_MFP_PA0_EPWM_CH0);
+                   (SYS_GPA_MFP_PA0_EPWM_CH0);
 
     /* Set GPA0 as output mode */
     GPIO_SetMode(PA, BIT0, GPIO_MODE_OUTPUT);
@@ -80,9 +80,12 @@ void EPWM_IRQHandler(void)
     static int toggle = 0;  /* First two already fill into EPWM, so start from 30% */
 
     /* Update EPWM channel 0 duty */
-    if(toggle == 0) {
+    if(toggle == 0)
+    {
         EPWM_SET_CMR(EPWM, 0, duty30);
-    } else {
+    }
+    else
+    {
         EPWM_SET_CMR(EPWM, 0, duty60);
     }
     toggle ^= 1;
@@ -123,7 +126,7 @@ int main()
 
     printf("Set GPB0 pin as ADC0 AIN0 input pin.\n");
     SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB0MFP_Msk))
-                 | SYS_GPB_MFP_PB0_ADC0_CH0;
+                   | SYS_GPB_MFP_PB0_ADC0_CH0;
     GPIO_SetMode(PB, BIT0, GPIO_MODE_INPUT);
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT0);
 

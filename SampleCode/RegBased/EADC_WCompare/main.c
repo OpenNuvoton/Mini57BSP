@@ -124,11 +124,11 @@ int main()
     /*      the compare match flag will be set if 5 consecutive EADC0 conversion value >= 3000. */
     EADC->WCMPCTL &= ~EADC_WCMPCTL_WCMPEN_Msk;  /* MUST disable WCMP first to reset internal compare match counter. */
     EADC->WCMPDAT = (3000 << EADC_WCMPDAT_WCMPHIGHDAT_Pos)
-                  | (0 << EADC_WCMPDAT_WCMPLOWDAT_Pos);
+                    | (0 << EADC_WCMPDAT_WCMPLOWDAT_Pos);
     EADC->WCMPCTL = (EADC_WCMPCTL_WCMPEN_Msk)
-                  | (EADC_WCMP_HIGH_ENABLE)
-                  | (EADC_WCMP_FLAG_AUTO_UPDATE)
-                  | (5 << EADC_WCMPCTL_WCMPMCNT_Pos);
+                    | (EADC_WCMP_HIGH_ENABLE)
+                    | (EADC_WCMP_FLAG_AUTO_UPDATE)
+                    | (5 << EADC_WCMPCTL_WCMPMCNT_Pos);
 
     EADC_ENABLE_CMP_INT(EADC, NULL);
 

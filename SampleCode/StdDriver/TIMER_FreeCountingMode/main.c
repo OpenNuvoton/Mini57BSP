@@ -3,7 +3,7 @@
  * @version  V3.00
  * $Revision: 1 $
  * $Date: 17/04/19 7:49p $
- * @brief    Use the ACMP0 positive input pin to demonstrate timer free counting mode 
+ * @brief    Use the ACMP0 positive input pin to demonstrate timer free counting mode
  *           function. And displays the measured input frequency to console
  * @note
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
@@ -18,18 +18,26 @@ void TMR0_IRQHandler(void)
     static int cnt = 0;
     static uint32_t t0, t1;
 
-    if(cnt == 0) {
+    if(cnt == 0)
+    {
         t0 = TIMER_GetCaptureData(TIMER0);
         cnt++;
-    } else if(cnt == 1) {
+    }
+    else if(cnt == 1)
+    {
         t1 = TIMER_GetCaptureData(TIMER0);
         cnt++;
-        if(t0 > t1) {
+        if(t0 > t1)
+        {
             /* over run, drop this data and do nothing */
-        } else {
+        }
+        else
+        {
             printf("Input frequency is %dHz\n", 1000000 / (t1 - t0));
         }
-    } else {
+    }
+    else
+    {
         cnt = 0;
     }
 
@@ -55,10 +63,10 @@ void SYS_Init(void)
     CLK_EnableModuleClock(USCI0_MODULE);
     CLK_EnableModuleClock(TMR0_MODULE);
     CLK_EnableModuleClock(ACMP_MODULE);
-	
+
     /* Select IP clock source */
-    CLK_SetModuleClock(TMR0_MODULE, CLK_TMR0_SRC_HIRC, 0);	
-	
+    CLK_SetModuleClock(TMR0_MODULE, CLK_TMR0_SRC_HIRC, 0);
+
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and cyclesPerUs automatically. */
     SystemCoreClockUpdate();
@@ -78,7 +86,7 @@ void SYS_Init(void)
     GPIO_SetMode(PB, BIT0, GPIO_MODE_INPUT);
 
     /* Disable digital input path of analog pin ACMP0_P to prevent leakage */
-    GPIO_DISABLE_DIGITAL_PATH(PB, (1 << 0));	
+    GPIO_DISABLE_DIGITAL_PATH(PB, (1 << 0));
 
     /* Lock protected registers */
     SYS_LockReg();

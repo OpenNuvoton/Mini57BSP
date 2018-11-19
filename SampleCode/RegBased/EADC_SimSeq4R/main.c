@@ -109,8 +109,8 @@ int main()
     /* Configure EADC0: channel 0 (AIN0), software trigger */
     /* Configure EADC1: channel 0 (BIN0), software trigger */
     /* Configure EADC conversion mode to Simultaneous Sequential 4R Mode */
-	/* EADC0 use channel 6 (Band-Gap) as second input, */
-	/* EADC1 use channel 3 (AIN0) as second input. */
+    /* EADC0 use channel 6 (Band-Gap) as second input, */
+    /* EADC1 use channel 3 (AIN0) as second input. */
     printf("Set EADC0 second input to channel 6 Band gap.\n");
     printf("Set EADC1 second input to channel 3 AIN0 (GPB0)\n");
     EADC->CTL = (EADC->CTL & ~(EADC_CTL_ADC0CHSEL_Msk | EADC_CTL_ADC0HWTRGEN_Msk | EADC_CTL_ADC1CHSEL_Msk | EADC_CTL_ADC1HWTRGEN_Msk | EADC_CTL_ADCMODE_Msk | EADC_CTL_ADCSS3R_Msk | EADC_CTL_ADC0SEQSEL_Msk | EADC_CTL_ADC1SEQSEL_Msk)) |

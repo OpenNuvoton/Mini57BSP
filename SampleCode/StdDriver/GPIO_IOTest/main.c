@@ -118,25 +118,30 @@ int main()
     /* Use Pin Data Input/Output Control to pull specified I/O or get I/O pin status */
     PB0 = 0;                /* Output low */
     CLK_SysTickDelay(10);   /* wait for IO stable */
-    if (PC2 != 0) {         /* check if the PB3 state is low */
+    if (PC2 != 0)           /* check if the PB3 state is low */
+    {
         i32Err = 1;
     }
 
     PB0 = 1;                /* Output high */
     CLK_SysTickDelay(10);   /* wait for IO stable */
-    if (PC2 != 1) {         /* check if the PB3 state is high */
+    if (PC2 != 1)           /* check if the PB3 state is high */
+    {
         i32Err = 1;
     }
 
     /* show the result */
-    if ( i32Err ) {
+    if ( i32Err )
+    {
         printf("  [FAIL] --- Please make sure PB.0 and PC.2 are connected. \n");
-    } else {
+    }
+    else
+    {
         printf("  [OK] \n");
     }
 
     printf("  Check Interrupt Flag PA=0x%08X, PB=0x%08X, PC=0x%08X, PD=0x%08X\n",
-        PAIntFlag, PBIntFlag, PCIntFlag, PDIntFlag);
+           PAIntFlag, PBIntFlag, PCIntFlag, PDIntFlag);
 
     GPIO_SetMode(PB, BIT0, GPIO_PMD_INPUT);     /* Configure PB.0 to default Input mode */
     GPIO_SetMode(PC, BIT2, GPIO_PMD_INPUT);     /* Configure PC.2 to default Input mode */

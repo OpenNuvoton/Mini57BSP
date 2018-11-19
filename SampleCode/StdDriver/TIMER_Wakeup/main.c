@@ -68,7 +68,7 @@ int main()
 
     /*Initial Timer0 to periodic mode with 1Hz */
     TIMER_Open(TIMER0, TIMER_PERIODIC_MODE, 1);
-	
+
     /* Enable timer wake up system */
     TIMER_EnableWakeup(TIMER0);
     /* Enable Timer0 interrupt */
@@ -77,16 +77,17 @@ int main()
     /* Start Timer0 counting */
     TIMER_Start(TIMER0);
     /* Unlock protected registers */
-    SYS_UnlockReg();		
-    while(1) {
+    SYS_UnlockReg();
+    while(1)
+    {
         CLK_PowerDown();
         printf("Wake %d\n", i++);
 
-        /* Wait USCI UART buffer empty to get a cleaner console out	*/	
-        UUART_CLR_PROT_INT_FLAG(UUART0, UUART_PROTSTS_TXENDIF_Msk | UUART_PROTSTS_TXSTIF_Msk);			
+        /* Wait USCI UART buffer empty to get a cleaner console out */
+        UUART_CLR_PROT_INT_FLAG(UUART0, UUART_PROTSTS_TXENDIF_Msk | UUART_PROTSTS_TXSTIF_Msk);
         while(!UUART_IS_TX_EMPTY(UUART0));
         if(UUART_GET_PROT_STATUS(UUART0) & UUART_PROTSTS_TXSTIF_Msk)
-            while((UUART_GET_PROT_STATUS(UUART0) & UUART_PROTSTS_TXENDIF_Msk) != UUART_PROTSTS_TXENDIF_Msk);	        
+            while((UUART_GET_PROT_STATUS(UUART0) & UUART_PROTSTS_TXENDIF_Msk) != UUART_PROTSTS_TXENDIF_Msk);
     }
 }
 

@@ -2,7 +2,7 @@
  * @file     main.c
  * @version  V1.00
  * $Revision: 2 $
- * $Date: 18/07/17 3:59p $ 
+ * $Date: 18/07/17 3:59p $
  * @brief    Show FMC read flash IDs, erase, read, and write functions.
  *
  * @note
@@ -27,7 +27,7 @@ void SYS_Init(void)
 
     /* Waiting for 48MHz clock ready */
     while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) != CLK_STATUS_HIRCSTB_Msk);
- 
+
     /* HCLK Clock source from HIRC */
     CLK->CLKSEL0 = CLK->CLKSEL0 | CLK_HCLK_SRC_HIRC;
 
@@ -72,7 +72,7 @@ uint32_t UUART_Open(UUART_T* uart, uint32_t u32baudrate)
 static int  set_data_flash_base(uint32_t u32DFBA)
 {
     uint32_t   au32Config[2];
-    
+
     /* FMC_ReadConfig(au32Config, 2) */
     /*   u32Config[0] = FMC_Read(FMC_CONFIG_BASE) */
     FMC->ISPCMD = FMC_ISPCMD_READ;
@@ -90,10 +90,10 @@ static int  set_data_flash_base(uint32_t u32DFBA)
 
     if ((!(au32Config[0] & 0x1)) && (au32Config[1] == u32DFBA))
         return 0;
-        
+
     /* FMC_ENABLE_CFG_UPDATE(); */
     FMC->ISPCTL |=  FMC_ISPCTL_CFGUEN_Msk;
-        
+
     au32Config[0] &= ~0x1;
     au32Config[1] = u32DFBA;
 
@@ -104,7 +104,7 @@ static int  set_data_flash_base(uint32_t u32DFBA)
     FMC->ISPCMD = FMC_ISPCMD_PAGE_ERASE;
     FMC->ISPADDR = FMC_CONFIG_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -125,7 +125,7 @@ static int  set_data_flash_base(uint32_t u32DFBA)
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
     /*   FMC_DISABLE_CFG_UPDATE() */
     FMC->ISPCTL &= ~FMC_ISPCTL_CFGUEN_Msk;
-        
+
     printf("\nSet Data Flash base as 0x%x.\n", DATA_FLASH_TEST_BASE);
 
     /* Perform chip reset to make new User Config take effect */
@@ -145,7 +145,7 @@ void run_crc32_checksum()
     FMC->ISPADDR = FMC_APROM_BASE;
     FMC->ISPDAT  = (DATA_FLASH_TEST_BASE-FMC_APROM_BASE);
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -158,7 +158,7 @@ void run_crc32_checksum()
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_APROM_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -167,7 +167,7 @@ void run_crc32_checksum()
         ret = -1;
         goto checksum0;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum0:
@@ -183,7 +183,7 @@ checksum0:
     FMC->ISPADDR = DATA_FLASH_TEST_BASE;
     FMC->ISPDAT  = (FMC_APROM_END-DATA_FLASH_TEST_BASE);
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -196,7 +196,7 @@ checksum0:
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = DATA_FLASH_TEST_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -205,7 +205,7 @@ checksum0:
         ret = -1;
         goto checksum1;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum1:
@@ -220,7 +220,7 @@ checksum1:
     FMC->ISPADDR = FMC_LDROM_BASE;
     FMC->ISPDAT  = FMC_LDROM_SIZE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -233,7 +233,7 @@ checksum1:
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_LDROM_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -242,7 +242,7 @@ checksum1:
         ret = -1;
         goto checksum2;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum2:
@@ -257,7 +257,7 @@ checksum2:
     FMC->ISPADDR = FMC_SPROM0_BASE;
     FMC->ISPDAT  = FMC_SPROM_SIZE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -270,7 +270,7 @@ checksum2:
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_SPROM0_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -279,7 +279,7 @@ checksum2:
         ret = -1;
         goto checksum3;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum3:
@@ -295,7 +295,7 @@ checksum3:
     FMC->ISPADDR = FMC_SPROM1_BASE;
     FMC->ISPDAT  = FMC_SPROM_SIZE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -308,7 +308,7 @@ checksum3:
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_SPROM1_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -317,7 +317,7 @@ checksum3:
         ret = -1;
         goto checksum4;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum4:
@@ -333,7 +333,7 @@ checksum4:
     FMC->ISPADDR = FMC_SPROM2_BASE;
     FMC->ISPDAT  = FMC_SPROM_SIZE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -346,7 +346,7 @@ checksum4:
     FMC->ISPCMD = FMC_ISPCMD_READ_CRC32;
     FMC->ISPADDR = FMC_SPROM2_BASE;
     FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
     if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -355,7 +355,7 @@ checksum4:
         ret = -1;
         goto checksum5;
     }
-    
+
     chksum = FMC->ISPDAT;
 
 checksum5:
@@ -369,8 +369,8 @@ checksum5:
 int32_t fill_data_pattern(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pattern)
 {
     uint32_t u32Addr;
-    
-    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4) 
+
+    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4)
     {
         /* FMC_Write(u32Addr, u32Pattern) */
         FMC->ISPCMD = FMC_ISPCMD_PROGRAM;
@@ -387,21 +387,21 @@ int32_t  verify_data(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pat
 {
     uint32_t    u32Addr;
     uint32_t    u32data;
-    
-    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4) 
-    {     
+
+    for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += 4)
+    {
         /* u32data = FMC_Read(u32Addr) */
         FMC->ISPCMD = FMC_ISPCMD_READ;
         FMC->ISPADDR = u32Addr;
         FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
         while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
         u32data = FMC->ISPDAT;
-       
+
         if (u32data != u32Pattern)
-        { 
+        {
             printf("\nFMC_Read data verify failed at address 0x%x, read=0x%x, expect=0x%x\n", u32Addr, u32data, u32Pattern);
             return -1;
-        }         
+        }
     }
     return 0;
 }
@@ -410,7 +410,7 @@ int32_t  verify_data(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pat
 int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Pattern)
 {
     uint32_t    u32Addr;
-    
+
     for (u32Addr = u32StartAddr; u32Addr < u32EndAddr; u32Addr += FMC_FLASH_PAGE_SIZE)
     {
         printf("    Flash test address: 0x%x    \r", u32Addr);
@@ -435,20 +435,20 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             FMC->ISPCMD = FMC_ISPCMD_PAGE_ERASE;
             FMC->ISPADDR = u32Addr;
             FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
             while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
             if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
                 FMC->ISPCTL |= FMC_ISPCTL_ISPFF_Msk;
         }
-        
+
         /* Verify if page contents are all 0xFFFFFFFF */
         if (verify_data(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, 0xFFFFFFFF) < 0)
         {
             printf("\nPage 0x%x erase verify failed!\n", u32Addr);
             return -1;
         }
-        
+
         /* Write test pattern to fill the whole page */
         if (fill_data_pattern(u32Addr, u32Addr + FMC_FLASH_PAGE_SIZE, u32Pattern) < 0)
         {
@@ -482,7 +482,7 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             FMC->ISPCMD = FMC_ISPCMD_PAGE_ERASE;
             FMC->ISPADDR = u32Addr;
             FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-    
+
             while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
 
             if (FMC->ISPCTL & FMC_ISPCTL_ISPFF_Msk)
@@ -495,7 +495,7 @@ int32_t  flash_test(uint32_t u32StartAddr, uint32_t u32EndAddr, uint32_t u32Patt
             printf("\nPage 0x%x erase verify failed!\n", u32Addr);
             return -1;
         }
-    } 
+    }
     printf("\r    Flash Test Passed.          \n");
     return 0;
 }
@@ -533,7 +533,7 @@ int main()
         goto lexit;
     }
 
- 
+
     /* Read BS */
     printf("  Boot Mode ............................. ");
     /* if (FMC_GetBootSource() == 0) */
@@ -545,7 +545,7 @@ int main()
         printf("  WARNING: The driver sample code must execute in AP mode!\n");
         goto lexit;
     }
-    
+
     /* u32Data = FMC_ReadCID()  */
     FMC->ISPCMD = FMC_ISPCMD_READ_CID;
     FMC->ISPADDR = 0x0;
@@ -594,7 +594,7 @@ int main()
     while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk);
     u32Data = FMC->ISPDAT;
     printf("  User Config 0 ......................... [0x%08x]\n", u32Data);
-    
+
     /* printf("  User Config 1 ......................... [0x%08x]\n", FMC_Read(FMC_CONFIG_BASE+4)) */
     FMC->ISPCMD = FMC_ISPCMD_READ;
     FMC->ISPADDR = (FMC_CONFIG_BASE+4);
@@ -608,7 +608,7 @@ int main()
     u32Data = FMC->DFBA;
 
     printf("  Data Flash Base Address ............... [0x%08x]\n", u32Data);
-    
+
     run_crc32_checksum();
 
     printf("\n\nLDROM test =>\n");
@@ -665,10 +665,10 @@ lexit:
 
     /* Lock protected registers */
     SYS_LockReg();
-    
+
     printf("\nFMC Sample Code Completed.\n");
     while (1);
-    
+
 }
 
 /*** (C) COPYRIGHT 2017 Nuvoton Technology Corp. ***/

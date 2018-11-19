@@ -107,7 +107,7 @@ int main()
 
     printf("Set GPB0 pin as ADC0 AIN0 input pin.\n");
     SYS->GPB_MFP = (SYS->GPB_MFP & (~SYS_GPB_MFP_PB0MFP_Msk))
-                 | SYS_GPB_MFP_PB0_ADC0_CH0;
+                   | SYS_GPB_MFP_PB0_ADC0_CH0;
     GPIO_SetMode(PB, BIT0, GPIO_MODE_INPUT);
     GPIO_DISABLE_DIGITAL_PATH(PB, BIT0);
 

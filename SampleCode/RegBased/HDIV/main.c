@@ -116,7 +116,7 @@ int main()
     }
 
     CLK->AHBCLK &= ~CLK_AHBCLK_HDIVCKEN_Msk;
-    
+
     printf("=== THE END ===\n\n");
     while(1);
 }

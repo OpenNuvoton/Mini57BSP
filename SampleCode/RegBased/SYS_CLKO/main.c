@@ -109,7 +109,7 @@ int main()
     printf("CPU @ %dHz\n", SystemCoreClock);        /* Display System Core Clock */
 
     /*
-     * This sample code will demonstrate how to output different clocks one after another 
+     * This sample code will demonstrate how to output different clocks one after another
      * to the same CLKO (PA0) pin.
      */
     printf("+-----------------------------------------+\n");
@@ -124,7 +124,7 @@ int main()
 
     printf("CLKO = HCLK / 1 = %dHz.\n", SystemCoreClock);
     /* Set CLKO clock source and divider */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) | 
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
                    (CLK_CLKO_SRC_HCLK);
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk)) |
                    ((0) << CLK_CLKOCTL_FREQSEL_Pos) |
@@ -136,7 +136,7 @@ int main()
     printf("CLKO = HCLK / 2^(0+1) = %dHz.\n", SystemCoreClock/2);
     /* Set CLKO clock source and divider */
     /*      CKO = clock source / 2^(u32ClkDiv + 1) */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) | 
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
                    (CLK_CLKO_SRC_HCLK);
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk)) |
                    ((0) << CLK_CLKOCTL_FREQSEL_Pos) |
@@ -148,7 +148,7 @@ int main()
     printf("CLKO = HCLK / 2^(2+1) = %dHz.\n", SystemCoreClock/8);
     /* Set CLKO clock source and divider */
     /*      CKO = clock source / 2^(u32ClkDiv + 1) */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) | 
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
                    (CLK_CLKO_SRC_HCLK);
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk)) |
                    ((2) << CLK_CLKOCTL_FREQSEL_Pos) |
@@ -162,7 +162,7 @@ int main()
     printf("CLKO = HXT / 1 = %dHz.\n", __HXT);
     CLK->PWRCTL |= CLK_PWRCTL_HXT_EN;
     /* Set CLKO clock source and divider */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) | 
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
                    (CLK_CLKO_SRC_EXT);
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk)) |
                    ((0) << CLK_CLKOCTL_FREQSEL_Pos) |
@@ -176,7 +176,7 @@ int main()
     CLK->PWRCTL |= CLK_PWRCTL_HXT_EN;
     /* Set CLKO clock source and divider */
     /*      CKO = clock source / 2^(u32ClkDiv + 1) */
-    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) | 
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
                    (CLK_CLKO_SRC_EXT);
     CLK->CLKOCTL = (CLK->CLKOCTL & ~(CLK_CLKOCTL_FREQSEL_Msk | CLK_CLKOCTL_DIV1EN_Msk)) |
                    ((1) << CLK_CLKOCTL_FREQSEL_Pos) |

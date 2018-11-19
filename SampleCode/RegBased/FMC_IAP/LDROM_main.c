@@ -2,11 +2,11 @@
  * @file     LDROM_main.c
  * @version  V1.00
  * $Revision: 2 $
- * $Date: 18/07/17 4:17p $ 
- * @brief    This sample code includes LDROM image (fmc_ld_iap) 
+ * $Date: 18/07/17 4:17p $
+ * @brief    This sample code includes LDROM image (fmc_ld_iap)
  *           and APROM image (fmc_ap_main).
- *           It shows how to branch between APROM and LDROM. To run 
- *           this sample code, the boot mode must be "Boot from APROM 
+ *           It shows how to branch between APROM and LDROM. To run
+ *           this sample code, the boot mode must be "Boot from APROM
  *           with IAP".
  *
  * @note
@@ -82,7 +82,7 @@ uint32_t UUART_Open(UUART_T* uart, uint32_t u32baudrate)
 void SendChar_ToUART(int ch)
 {
     while (UUART0->BUFSTS & UUART_BUFSTS_TXFULL_Msk);
-        UUART0->TXDAT = ch;
+    UUART0->TXDAT = ch;
 
     if (ch == '\n')
     {
@@ -115,7 +115,7 @@ int main()
     /* Enable FMC ISP function */
     /* FMC_Open() */
     FMC->ISPCTL |=  FMC_ISPCTL_ISPEN_Msk;
-    
+
     print_msg("\n\n");
     print_msg("Mini57 FMC IAP Sample Code [LDROM code]\n");
 
@@ -126,7 +126,7 @@ int main()
     print_msg("\n\nChange VECMAP and branch to APROM...\n");
 
     while((UUART0->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk) == 0);   /* Wait Tx empty */
-   
+
 
     /*  NOTE!
      *     Before change VECMAP, user MUST disable all interrupts.
@@ -152,7 +152,7 @@ int main()
     __set_SP(*(uint32_t *)FMC_APROM_BASE);
 #endif
     func();
-    
+
     while (1);
 }
 

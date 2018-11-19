@@ -69,7 +69,7 @@ int main()
     printf("CPU @ %dHz\n", SystemCoreClock);        /* Display System Core Clock */
 
     /*
-     * This sample code will demonstrate how to output different clocks one after another 
+     * This sample code will demonstrate how to output different clocks one after another
      * to the same CLKO (PA0) pin.
      */
     printf("+-----------------------------------------+\n");

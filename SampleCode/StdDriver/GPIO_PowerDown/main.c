@@ -62,7 +62,8 @@ void GPABCD_IRQHandler(void)
         GPIO_CLR_INT_FLAG(PB, BIT0);    /* Clear PB.0 interrupt flag */
     }
     else
-    {    /* Un-expected interrupt. Just clear all PORTA, PORTB, PORTC, PORTD interrupts */
+    {
+        /* Un-expected interrupt. Just clear all PORTA, PORTB, PORTC, PORTD interrupts */
         GPIO_CLR_INT_FLAG(PA, GPIO_GET_INT_FLAG(PA, 0x3F));
         GPIO_CLR_INT_FLAG(PB, GPIO_GET_INT_FLAG(PB, 0x1F));
         GPIO_CLR_INT_FLAG(PC, GPIO_GET_INT_FLAG(PC, 0x1F));

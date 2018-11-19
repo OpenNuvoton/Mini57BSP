@@ -254,8 +254,8 @@ int main()
                 u32StatusCmpf = u32Status & ECAP_STS_CAPCMPF_Msk;
                 u32StatusOvf  = u32Status & ECAP_STS_CAPOVF_Msk;
                 printf("Input Captured !! Hold value = %8d, (CmpMatch: %s, Overflow: %s)\n", u32IC0Hold,
-                    u32StatusCmpf ? "Yes" : "No",
-                    u32StatusOvf ? "Yes" : "No" );
+                       u32StatusCmpf ? "Yes" : "No",
+                       u32StatusOvf ? "Yes" : "No" );
             }
             else if (u32Status & ECAP_STS_CAPCMPF_Msk)
                 printf("Compare-Match !! Compare-Match count = %d\n", ECAP_GET_CNT_CMP(ECAP));
@@ -281,8 +281,8 @@ int main()
                 u32StatusCmpf = u32Status & ECAP_STS_CAPCMPF_Msk;
                 u32StatusOvf  = u32Status & ECAP_STS_CAPOVF_Msk;
                 printf("Input Captured !! Hold value = %8d, (CmpMatch: %s, Overflow: %s)\n", u32IC0Hold,
-                    u32StatusCmpf ? "Yes" : "No",
-                    u32StatusOvf ? "Yes" : "No" );
+                       u32StatusCmpf ? "Yes" : "No",
+                       u32StatusOvf ? "Yes" : "No" );
             }
             else if (u32Status & ECAP_STS_CAPCMPF_Msk)
                 printf("Compare-Match !! Compare-Match count = %d. Reset capture counter to 0.\n", ECAP_GET_CNT_CMP(ECAP));

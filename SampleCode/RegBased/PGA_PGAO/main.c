@@ -108,35 +108,40 @@ int main()
     PGA->CTL = PGA_CTL_PGAEN_Msk | (PGA_GAIN_2 << PGA_CTL_GAIN_Pos);
 
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x1.\n");
 
     PGA_SET_GAIN(PGA, PGA_GAIN_1);
 
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x5.\n");
 
     PGA_SET_GAIN(PGA, PGA_GAIN_5);
 
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to next gain level ... \n");  getchar();
+    printf("Press any key to next gain level ... \n");
+    getchar();
 
     printf("Configure PGA with gain level x7.\n");
 
     PGA_SET_GAIN(PGA, PGA_GAIN_7);
 
     printf("Compare the signal on input pin GPB3 and output pin GPC3.\n");
-    printf("Press any key to disable PGA_O pin ... \n");  getchar();
+    printf("Press any key to disable PGA_O pin ... \n");
+    getchar();
 
     printf("Configure PGA to disable PGA_O pin.\n");
 
     PGA_DISABLE_OUTPUT_PGAO(PGA);
 
     printf("The output pin GPC3 should has no signal.\n");
-    printf("Press any key to close PGA and exit ... \n");  getchar();
+    printf("Press any key to close PGA and exit ... \n");
+    getchar();
 
     /* Close PGA */
     PGA->CTL = PGA->CTL & (~PGA_CTL_PGAEN_Msk);

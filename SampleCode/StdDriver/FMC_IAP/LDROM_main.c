@@ -2,11 +2,11 @@
  * @file     LDROM_main.c
  * @version  V1.00
  * $Revision: 2 $
- * $Date: 18/07/17 4:06p $ 
- * @brief    This sample code includes LDROM image (fmc_ld_iap) 
+ * $Date: 18/07/17 4:06p $
+ * @brief    This sample code includes LDROM image (fmc_ld_iap)
  *           and APROM image (fmc_ap_main).
- *           It shows how to branch between APROM and LDROM. To run 
- *           this sample code, the boot mode must be "Boot from APROM 
+ *           It shows how to branch between APROM and LDROM. To run
+ *           this sample code, the boot mode must be "Boot from APROM
  *           with IAP".
  *
  * @note
@@ -20,7 +20,7 @@ typedef void (FUNC_PTR)(void);
 
 void SYS_Init(void)
 {
-   /* Unlock protected registers */
+    /* Unlock protected registers */
     SYS_UnlockReg();
 
     /* Enable 48MHz HIRC */
@@ -43,7 +43,7 @@ void SYS_Init(void)
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
     SYS->GPD_MFP = SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 
-    /* Set GPD5 as output mode and GPD6 as Input mode */ 
+    /* Set GPD5 as output mode and GPD6 as Input mode */
     PD->MODE = PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
 
     /* Lock protected registers */
@@ -73,7 +73,7 @@ uint32_t UUART_Open(UUART_T* uart, uint32_t u32baudrate)
 
     uart->LINECTL = 0x08<<8 | 0x01;     /* 8-N-1 bit, LSB first */
 
-    /* Uart Protocol setting */ 
+    /* Uart Protocol setting */
     uart->PROTCTL = UUART_PROTCTL_PROTEN_Msk;
 
     return 0;
@@ -114,7 +114,7 @@ int main()
 
     /* Enable FMC ISP function */
     FMC_Open();
-    
+
     print_msg("\n\n");
     print_msg("Mini57 FMC IAP Sample Code [LDROM code]\n");
 
@@ -138,14 +138,14 @@ int main()
     func = (FUNC_PTR *) FMC_Read(FMC_APROM_BASE+4);
 
 #ifdef __GNUC__                        /* for GNU C compiler */
-              u32Data = *(uint32_t *)FMC_LDROM_BASE;
+    u32Data = *(uint32_t *)FMC_LDROM_BASE;
     asm("msr msp, %0" : : "r" (u32Data));
 #else
     __set_SP(*(uint32_t *)FMC_APROM_BASE);
 #endif
 
     func();
-    
+
     while (1);
 }
 
