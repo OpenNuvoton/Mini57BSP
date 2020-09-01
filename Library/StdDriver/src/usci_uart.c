@@ -6,6 +6,7 @@
  * @brief    Mini57 Series USCI UART (UUART) driver source file
  *
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 

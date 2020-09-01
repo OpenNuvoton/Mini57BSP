@@ -5,6 +5,7 @@
  * $Date: 17/04/19 7:49p $
  * @brief    Implement WDT time-out interrupt event to wake up system and generate time-out reset system event while WDT time-out reset delay period expired.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

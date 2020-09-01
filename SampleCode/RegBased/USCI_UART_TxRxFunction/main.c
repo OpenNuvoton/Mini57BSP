@@ -5,6 +5,7 @@
  * $Date: 17/08/24 3:42p $
  * @brief    Transmit and receive data from PC terminal through RS232 interface.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

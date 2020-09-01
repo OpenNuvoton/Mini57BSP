@@ -5,6 +5,7 @@
  * $Date: 17/04/19 7:49p $
  * @brief    Transmit LIN frame including header and response in USCI UART LIN mode.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

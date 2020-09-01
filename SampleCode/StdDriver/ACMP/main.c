@@ -6,6 +6,7 @@
  * @brief    Demonstrate analog comparator (ACMP) comparison by comparing
  *           ACMP0_P0 input and VBG voltage and shows the result on UART console
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

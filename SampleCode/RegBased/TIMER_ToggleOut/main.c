@@ -5,6 +5,7 @@
  * $Date: 17/08/07 11:48a $
  * @brief    Demonstrate the timer 0 toggle out function on pin PB.3
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

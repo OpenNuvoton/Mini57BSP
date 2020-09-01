@@ -13,6 +13,7 @@
 
 #define FW_VERSION                        0x33
 
+#include <string.h>
 #include "fmc_user.h"
 
 #define CMD_UPDATE_APROM            0x000000A0
@@ -46,4 +47,6 @@ extern uint32_t g_apromSize, g_dataFlashAddr, g_dataFlashSize;
 extern __align(4) uint8_t usb_rcvbuf[];
 extern __align(4) uint8_t usb_sendbuf[];
 extern __align(4) uint8_t response_buff[64];
+
+extern volatile uint8_t bISPDataReady;
 #endif  // #ifndef ISP_USER_H

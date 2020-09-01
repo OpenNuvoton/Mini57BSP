@@ -6,6 +6,7 @@
  * @brief    Use the ACMP0 positive input pin to demonstrate timer free counting mode
  *           function. And displays the measured input frequency to console
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

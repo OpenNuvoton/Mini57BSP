@@ -6,6 +6,7 @@
  * @brief    Show how to wake-up USCI_I2C from deep sleep mode.
  *           This sample code needs to work with USCI_I2C_Master.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
@@ -65,7 +66,7 @@ void USCI1_IRQHandler(void)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  USCI_I2C toggle wake-up                                                                         */
+/*  USCI_I2C toggle wake-up                                                                                */
 /*---------------------------------------------------------------------------------------------------------*/
 void USCI_I2C_SLV_Toggle_Wakeup(uint32_t u32Status)
 {
@@ -161,7 +162,7 @@ void USCI_I2C_SLV_Toggle_Wakeup(uint32_t u32Status)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  USCI_I2C address match wake-up                                                                            */
+/*  USCI_I2C address match wake-up                                                                         */
 /*---------------------------------------------------------------------------------------------------------*/
 void USCI_I2C_SLV_Address_Wakeup(uint32_t u32Status)
 {

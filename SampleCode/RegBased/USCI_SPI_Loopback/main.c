@@ -8,6 +8,7 @@
  *           This sample code needs to connect USCI_SPI1_MISO pin and USCI_SPI1_MOSI pin together.
  *           It will compare the received data with transmitted data.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

@@ -5,6 +5,7 @@
  * $Date: 17/08/09 11:19a $
  * @brief    Demonstrate the EPWM double buffer feature.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

@@ -10,7 +10,7 @@
  ******************************************************************************/
 #include <stdio.h>
 #include "targetdev.h"
-#include "usci_uart_transfer.h"
+#include "usci_i2c_transfer.h"
 #include "isp_user.h"
 
 void SYS_Init(void)
@@ -31,12 +31,9 @@ void SYS_Init(void)
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
-    /* Set GPD5 as output mode and GPD6 as Input mode */
-    PD->MODE = (PD->MODE & (~GPIO_MODE_MODE5_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
-    PD->MODE = (PD->MODE & (~GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_INPUT << GPIO_MODE_MODE6_Pos);
-    /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
-    /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+
+    /* Set GPA multi-function pins for USCI I2C0 GPA3(SCL) and GPA2(SDA) */
+    SYS->GPA_MFP = (SYS->GPA_MFP & ~(SYS_GPA_MFP_PA3MFP_Msk | SYS_GPA_MFP_PA2MFP_Msk)) | (SYS_GPA_MFP_PA3_I2C0_SCL | SYS_GPA_MFP_PA2_I2C0_SDA);
 }
 
 
@@ -44,16 +41,18 @@ void SYS_Init(void)
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
 
+
 int main(void)
 {
-    uint32_t rcvsize_bak = 0;
-    uint32_t checkcnt = 0;
+    uint32_t cmd_buff[16];
+    uint32_t u32Status;
+
     /* Unlock protected registers */
     SYS_UnlockReg();
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
-    /* Init UART to 115200-8n1 */
-    USCI0_Init();
+    /* Init USCI I2C */
+    UI2C_Init();
     CLK->AHBCLK |= CLK_AHBCLK_ISPCKEN_Msk;
     FMC->ISPCTL |= FMC_ISPCTL_ISPEN_Msk;
     g_apromSize = 0x7600;  // 29.5 K
@@ -64,37 +63,16 @@ int main(void)
 
     while (1)
     {
-        if (rcvsize_bak != rcvsize)
-        {
-            rcvsize_bak = rcvsize;
-            checkcnt = 0;
-        }
-        else if (rcvsize_bak != 0)
-        {
-            checkcnt++;
+        u32Status = UI2C_GET_PROT_STATUS(UI2C0) & UI2C_STATUS;
 
-            if (checkcnt > 1000)
-            {
-                // Check the first isp command must be CMD_CONNECT
-                if ((rcvsize_bak == 64) && (inpw(uart_rcvbuf) == CMD_CONNECT))
-                {
-                    __set_PRIMASK(1);
-                    rcvsize = 0;
-                    bUartDataReady = TRUE;
-                    __set_PRIMASK(0);
-                    goto _ISP;
-                }
-                else
-                {
-                    // Drop Invalid Data & Reset index pointer for UART Buffer
-                    __set_PRIMASK(1);
-                    rcvsize = 0;
-                    bufhead = 0;
-                    bUartDataReady = FALSE;
-                    __set_PRIMASK(0);
-                    rcvsize_bak = 0;
-                }
-            }
+        if(u32Status != 0)
+        {
+            UI2C_SlaveTRx(UI2C0, u32Status);
+        }
+
+        if ((bI2cDataReady == 1) && (bI2cSlvEndFlag == 1))
+        {
+            goto _ISP;
         }
 
         if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
@@ -107,43 +85,21 @@ _ISP:
 
     while (1)
     {
-        if (bUartDataReady == TRUE)
+
+        if ((bI2cDataReady == 1) && (bI2cSlvEndFlag == 1))
         {
-            bUartDataReady = FALSE;
-            ParseCmd(uart_rcvbuf, 64);
-            PutString();
-            rcvsize_bak = 0;
-            rcvsize = 0;
+            memcpy(cmd_buff, i2c_rcvbuf, 64);
+            bI2cDataReady = 0;
+            bI2cSlvEndFlag = 0;
+            ParseCmd((unsigned char *)cmd_buff, 64);
+            bISPDataReady = 1;
         }
 
-        if (rcvsize_bak != rcvsize)
-        {
-            rcvsize_bak = rcvsize;
-            checkcnt = 0;
-        }
-        else if (rcvsize_bak != 0)
-        {
-            checkcnt++;
+        u32Status = UI2C_GET_PROT_STATUS(UI2C0) & UI2C_STATUS;
 
-            if (checkcnt > 1000)
-            {
-                if (rcvsize_bak == 64)
-                {
-                    __set_PRIMASK(1);
-                    rcvsize = 0;
-                    bUartDataReady = TRUE;
-                    __set_PRIMASK(0);
-                    // continue;
-                }
-                else
-                {
-                    // Drop Invalid Data & Reset index pointer for UART Buffer
-                    __set_PRIMASK(1);
-                    rcvsize = 0;
-                    bufhead = 0;
-                    __set_PRIMASK(0);
-                }
-            }
+        if(u32Status != 0)
+        {
+            UI2C_SlaveTRx(UI2C0, u32Status);
         }
     }
 

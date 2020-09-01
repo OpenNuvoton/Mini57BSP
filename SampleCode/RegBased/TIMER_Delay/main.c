@@ -6,6 +6,7 @@
  * @brief    Demonstrate the usage of TIMER_Delay() API to generate a 1
  *           second delay
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

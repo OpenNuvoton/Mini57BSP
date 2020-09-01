@@ -18,7 +18,8 @@ extern "C"
 
 // Nuvoton MCU Peripheral Access Layer Header File
 #include "Mini57Series.h"
-
+#include "isp_user.h"
+#include "usci_i2c_transfer.h"
 
 #ifdef __cplusplus
 }

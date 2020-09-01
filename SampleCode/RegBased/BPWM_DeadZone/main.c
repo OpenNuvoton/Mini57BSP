@@ -5,6 +5,7 @@
  * $Date: 17/08/08 1:12p $
  * @brief    Demonstrate the BPWM dead-zone feature.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

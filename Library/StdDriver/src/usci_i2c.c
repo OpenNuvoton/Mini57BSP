@@ -6,6 +6,7 @@
  * @brief    Mini57 Series USCI I2C(UI2C) driver source file
  *
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include "Mini57Series.h"

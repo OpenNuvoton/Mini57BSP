@@ -6,6 +6,7 @@
  * @brief    Show how to set USCI_I2C in Slave 10-bit address mode and receive the data from Master.
  *           This sample code needs to work with USCI_I2C_Master_10bit.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>

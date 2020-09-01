@@ -12,12 +12,14 @@
 #include "string.h"
 #include "isp_user.h"
 
+volatile uint8_t bISPDataReady;
+
 __align(4) uint8_t response_buff[64];
 __align(4) static uint8_t aprom_buf[FMC_FLASH_PAGE_SIZE];
 uint32_t bUpdateApromCmd;
 uint32_t g_apromSize, g_dataFlashAddr, g_dataFlashSize;
 
-static uint16_t Checksum(unsigned char *buf, int len)
+__STATIC_INLINE uint16_t Checksum(unsigned char *buf, int len)
 {
     int i;
     uint16_t c;

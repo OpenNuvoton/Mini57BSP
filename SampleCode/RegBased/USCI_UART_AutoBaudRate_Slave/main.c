@@ -7,6 +7,7 @@
  *           Show how to use auto baud rate detection function.
  *           This sample code needs to work with USCI_UART_AutoBaudRate_Master.
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
@@ -121,7 +122,7 @@ int main()
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  Get UUART Baud Rate Function                                                                            */
+/*  Get UUART Baud Rate Function                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
 uint32_t GetUuartBaudrate(UUART_T *uuart)
 {
@@ -143,7 +144,7 @@ uint32_t GetUuartBaudrate(UUART_T *uuart)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  Auto Baud Rate Function Rx Test                                                                                 */
+/*  Auto Baud Rate Function Rx Test                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
 void USCI_AutoBaudRate_RxTest()
 {
