@@ -1,13 +1,14 @@
-/**************************************************************************//**
- * @file     startup_m031series.s
- * @version  V2.00
- * $Revision: 6 $
- * $Date: 18/04/12 4:44p $
- * @brief    CMSIS Cortex-M0 Core Device Startup File for M031
- *
- * @note
- * Copyright (C) 2018 Nuvoton Technology Corp. All rights reserved.
- ******************************************************************************/
+;/******************************************************************************
+; * @file     startup_Mini57Series.S
+; * @version  V1.00
+; * $Revision: 1 $
+; * $Date: 13/10/28 2:20p $ 
+; * @brief    CMSIS Cortex-M0 Core Device Startup File for Mini57 Series MCU
+; *
+; * @note
+; * SPDX-License-Identifier: Apache-2.0
+; * Copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
+;*****************************************************************************/
 
 	.syntax	unified
 	.arch	armv6-m

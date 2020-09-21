@@ -5,7 +5,8 @@
  * $Date: 17/05/04 5:20p $
  * @brief    Sample code for PGA output to PGA_O pin.
  * @note
- * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
 #include "Mini57Series.h"

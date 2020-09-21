@@ -5,7 +5,8 @@
  * $Date: 17/04/19 7:49p $
  * @brief    Sample code for EADC Simultaneous Sequential 4R mode.
  * @note
- * Copyright (C) 2017 Nuvoton Technology Corp. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ * @copyright (C) 2020 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
 #include "Mini57Series.h"
