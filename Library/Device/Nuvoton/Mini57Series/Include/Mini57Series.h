@@ -7600,9 +7600,9 @@ typedef struct
 
 
 
-/*---------------------- Programmable Gain Ampifier -------------------------*/
+/*---------------------- Programmable Gain Amplifier -------------------------*/
 /**
-    @addtogroup PGA Programmable Gain Ampifier(PGA)
+    @addtogroup PGA Programmable Gain Amplifier(PGA)
     Memory Mapped Structure for PGA Controller
 @{ */
 
