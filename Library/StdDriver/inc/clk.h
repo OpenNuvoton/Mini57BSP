@@ -117,6 +117,7 @@ extern "C"
 
 #define ACMP_MODULE  ((1UL<<30)|(MODULE_NoMsk<<27)|(MODULE_NoMsk<<22)    |(           MODULE_NoMsk<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_ACMPCKEN_Pos)   /*!< ACMP Module     */
 #define EADC_MODULE  ((1UL<<30)|(           1<<27)|(           2<<22)    |( CLK_CLKSEL1_ADCSEL_Pos<<17)|(           0<<14)|(           8<<10)    |(CLK_CLKDIV_ADCDIV_Pos<<5)|CLK_APBCLK_ADCCKEN_Pos)    /*!< EADC Module     */
+#define ADC_MODULE   ((1UL<<30)|(           1<<27)|(           2<<22)    |( CLK_CLKSEL1_ADCSEL_Pos<<17)|(           0<<14)|(           8<<10)    |(CLK_CLKDIV_ADCDIV_Pos<<5)|CLK_APBCLK_ADCCKEN_Pos)    /*!< ADC  Module     */
 #define USCI1_MODULE ((1UL<<30)|(MODULE_NoMsk<<27)|(MODULE_NoMsk<<22)    |(           MODULE_NoMsk<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_USCI1CKEN_Pos)  /*!< USCI1 Module    */
 #define USCI0_MODULE ((1UL<<30)|(MODULE_NoMsk<<27)|(MODULE_NoMsk<<22)    |(           MODULE_NoMsk<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_USCI0CKEN_Pos)  /*!< USCI0 Module    */
 #define BPWM_MODULE  ((1UL<<30)|(MODULE_NoMsk<<27)|(MODULE_NoMsk<<22)    |(           MODULE_NoMsk<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_BPWMCKEN_Pos)   /*!< BPWM Module     */
