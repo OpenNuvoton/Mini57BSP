@@ -148,6 +148,9 @@ void SYS_Init(void)
     /* Set GPC multi-function pins for USCI I2C1 GPC0(SCL) and GPC2(SDA) */
     SYS->GPC_MFP = (SYS->GPC_MFP & ~(SYS_GPC_MFP_PC0MFP_Msk | SYS_GPC_MFP_PC2MFP_Msk)) | (SYS_GPC_MFP_PC0_I2C1_SCL | SYS_GPC_MFP_PC2_I2C1_SDA);
 
+    /* I2C pin enable schmitt trigger */
+    PC->SMTEN |= (GPIO_SMTEN_SMTEN0_Msk | GPIO_SMTEN_SMTEN2_Msk);
+
     /* Lock protected registers */
     SYS_LockReg();
 }

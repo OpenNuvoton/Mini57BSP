@@ -34,6 +34,9 @@ void SYS_Init(void)
 
     /* Set GPA multi-function pins for USCI I2C0 GPA3(SCL) and GPA2(SDA) */
     SYS->GPA_MFP = (SYS->GPA_MFP & ~(SYS_GPA_MFP_PA3MFP_Msk | SYS_GPA_MFP_PA2MFP_Msk)) | (SYS_GPA_MFP_PA3_I2C0_SCL | SYS_GPA_MFP_PA2_I2C0_SDA);
+
+    /* I2C pin enable schmitt trigger */
+    PA->SMTEN |= (GPIO_SMTEN_SMTEN2_Msk | GPIO_SMTEN_SMTEN3_Msk);
 }
 
 
