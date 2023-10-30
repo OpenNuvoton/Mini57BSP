@@ -118,7 +118,7 @@ int main()
     printf("| Operating sequence                                                      |\n");
     printf("|  1. Remove all continuous load, e.g. LED.                               |\n");
     printf("|  2. Configure all GPIO as Quasi-bidirectional Mode                      |\n");
-    printf("|  3. Must disable LVR                                                    |\n");
+    printf("|  3. Must enable LVR                                                     |\n");
     printf("|  4. Disable analog function, e.g. ADC, ACMP, and POR module.            |\n");
     printf("|  5. Enter to Power-Down                                                 |\n");
     printf("|  6. Wait for PB.3 falling-edge interrupt event to wakeup the MCU        |\n");
@@ -158,8 +158,8 @@ int main()
     /* LIRC must be disabled */
     CLK->PWRCTL &= ~CLK_PWRCTL_LIRCEN_Msk;
 
-    /* LVR must be disabled */
-    SYS->BODCTL &= ~SYS_BODCTL_LVREN_Msk;
+    /* LVR must be enabled */
+    SYS->BODCTL |= SYS_BODCTL_LVREN_Msk;
 
     /* BOD must be disabled */
     SYS->BODCTL &= ~SYS_BODCTL_BODEN_Msk;
