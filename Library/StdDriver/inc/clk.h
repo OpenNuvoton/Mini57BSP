@@ -129,7 +129,11 @@ extern "C"
 #define TMR0_MODULE  ((1UL<<30)|(           1<<27)|(           3<<22)    |(CLK_CLKSEL1_TMR0SEL_Pos<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_TMR0CKEN_Pos)   /*!< TMR0 Module     */
 #define WDT_MODULE   ((1UL<<30)|(           1<<27)|(           2<<22)    |( CLK_CLKSEL1_WDTSEL_Pos<<17)|(MODULE_NoMsk<<14)|(MODULE_NoMsk<<10)    |(         MODULE_NoMsk<<5)|CLK_APBCLK_WDTCKEN_Pos)    /*!< WDT Module      */
 
+#define CLK_TIMEOUT_ERR             (-1)    /*!< Clock timeout error value \hideinitializer */
+
 /*@}*/ /* end of group Mini57_CLK_EXPORTED_CONSTANTS */
+
+extern int32_t g_CLK_i32ErrCode;
 
 /** @addtogroup Mini57_CLK_EXPORTED_FUNCTIONS CLK Exported Functions
   @{
@@ -152,7 +156,7 @@ void CLK_EnableXtalRC(uint32_t u32ClkMask);
 void CLK_DisableXtalRC(uint32_t u32ClkMask);
 void CLK_EnableModuleClock(uint32_t u32ModuleIdx);
 void CLK_DisableModuleClock(uint32_t u32ModuleIdx);
-void CLK_SysTickDelay(uint32_t us);
+int32_t CLK_SysTickDelay(uint32_t us);
 void CLK_EnableSysTick(uint32_t u32ClkSrc, uint32_t u32Count);
 void CLK_DisableSysTick(void);
 uint32_t CLK_WaitClockReady(uint32_t u32ClkMask);

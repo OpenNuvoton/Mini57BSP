@@ -42,6 +42,8 @@ extern "C"
 #define TIMER_COUNTER_RISING_EDGE              (TIMER_EXTCTL_CNTPHASE_Msk)        /*!< Counter increase on rising edge */
 #define TIMER_COUNTER_FALLING_EDGE             (0UL)                              /*!< Counter increase on falling edge */
 
+#define TIMER_TIMEOUT_ERR                      (-1L)                              /*!< TIMER operation abort due to timeout error \hideinitializer */
+
 /*@}*/ /* end of group Mini57_TIMER_EXPORTED_CONSTANTS */
 
 
@@ -267,7 +269,7 @@ __STATIC_INLINE uint32_t TIMER_GetCounter(TIMER_T *timer)
 
 uint32_t TIMER_Open(TIMER_T *timer, uint32_t u32Mode, uint32_t u32Freq);
 void TIMER_Close(TIMER_T *timer);
-void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec);
+int32_t TIMER_Delay(TIMER_T *timer, uint32_t u32Usec);
 void TIMER_EnableCapture(TIMER_T *timer, uint32_t u32CapMode, uint32_t u32Edge);
 void TIMER_DisableCapture(TIMER_T *timer);
 void TIMER_EnableEventCounter(TIMER_T *timer, uint32_t u32Edge);

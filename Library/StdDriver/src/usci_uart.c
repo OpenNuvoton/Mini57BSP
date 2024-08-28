@@ -378,17 +378,25 @@ uint32_t UUART_Read(UUART_T* uuart, uint8_t *pu8RxBuf, uint32_t u32ReadBytes)
 {
     uint32_t  u32Count, u32delayno;
 
-    for(u32Count = 0; u32Count < u32ReadBytes; u32Count++)
+    for(u32Count = 0ul; u32Count < u32ReadBytes; u32Count++)
     {
-        u32delayno = 0;
+        u32delayno = 0ul;
 
         while(uuart->BUFSTS & UUART_BUFSTS_RXEMPTY_Msk)   /* Check RX empty => failed */
         {
             u32delayno++;
-            if(u32delayno >= 0x40000000)
-                return FALSE;
+            if(u32delayno >= 0x40000000ul)
+            {
+                break;
+            }
         }
-        pu8RxBuf[u32Count] = uuart->RXDAT;    /* Get Data from USCI RX  */
+
+        if(u32delayno >= 0x40000000ul)
+        {
+            break;
+        }
+
+        pu8RxBuf[u32Count] = (uint8_t)uuart->RXDAT;    /* Get Data from USCI RX  */
     }
 
     return u32Count;
@@ -545,20 +553,27 @@ uint32_t UUART_Write(UUART_T* uuart, uint8_t *pu8TxBuf, uint32_t u32WriteBytes)
 {
     uint32_t  u32Count, u32delayno;
 
-    for(u32Count = 0; u32Count != u32WriteBytes; u32Count++)
+    for(u32Count = 0ul; u32Count != u32WriteBytes; u32Count++)
     {
-        u32delayno = 0;
-        while((uuart->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk) == 0)   /* Wait Tx empty */
+        u32delayno = 0ul;
+        while((uuart->BUFSTS & UUART_BUFSTS_TXEMPTY_Msk) == 0ul)   /* Wait Tx empty */
         {
             u32delayno++;
-            if(u32delayno >= 0x40000000)
-                return FALSE;
+            if(u32delayno >= 0x40000000ul)
+            {
+                break;
+            }
         }
-        uuart->TXDAT = pu8TxBuf[u32Count];    /* Send USCI_UART Data to buffer */
+
+        if(u32delayno >= 0x40000000ul)
+        {
+            break;
+        }
+
+        uuart->TXDAT = (uint8_t)pu8TxBuf[u32Count];    /* Send USCI_UART Data to buffer */
     }
 
     return u32Count;
-
 }
 
 

@@ -79,15 +79,19 @@ void TIMER_Close(TIMER_T *timer)
   * @brief This API is used to create a delay loop for u32usec micro seconds
   * @param[in] timer The pointer of the specified Timer module
   * @param[in] u32Usec Delay period in micro seconds with 10 usec every step. Valid values are between 10~1000000 (10 micro second ~ 1 second)
-  * @return None
+  *
+  * @return     Delay success or not
+  * @retval     0 Success, target delay time reached
+  * @retval     TIMER_TIMEOUT_ERR Delay function execute failed due to timer stop working
+  *
   * @note This API overwrites the register setting of the timer used to count the delay time.
   * @note This API use polling mode. So there is no need to enable interrupt for the timer module used to generate delay
   */
-void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
+int32_t TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
 {
     uint32_t u32Clk = TIMER_GetModuleClock(timer);
-    uint32_t u32Prescale = 0, delay = (SystemCoreClock / u32Clk) + 1;
-    uint32_t u32Cmpr, u32NsecPerTick;
+    uint32_t u32Prescale = 0, u32Delay = (SystemCoreClock / u32Clk) + 1;
+    uint32_t u32Cmpr, u32Cntr, u32NsecPerTick, i = 0UL;
 
     /* Clear current timer configuration */
     timer->CTL = 0;
@@ -127,13 +131,34 @@ void TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
 
     /* When system clock is faster than timer clock, it is possible timer active bit cannot set in time while we check it. */
     /* And the while loop below return immediately, so put a tiny delay here allowing timer start counting and raise active flag. */
-    for(; delay > 0; delay--)
+    for(; u32Delay > 0; u32Delay--)
     {
         __NOP();
     }
 
-    while(timer->CTL & TIMER_CTL_ACTSTS_Msk);
-
+    /* Add a bail out counter here in case timer clock source is disabled accidentally.
+       Prescale counter reset every ECLK * (prescale value + 1).
+       The u32Delay here is to make sure timer counter value changed when prescale counter reset */
+    u32Delay = (SystemCoreClock / TIMER_GetModuleClock(timer)) * (u32Prescale + 1);
+    u32Cntr = timer->CNT;
+    i = 0;
+    while(timer->CTL & TIMER_CTL_ACTSTS_Msk)
+    {
+        /* Bailed out if timer stop counting e.g. Some interrupt handler close timer clock source. */
+        if(u32Cntr == timer->CNT)
+        {
+            if(i++ > u32Delay)
+            {
+                return TIMER_TIMEOUT_ERR;
+            }
+        }
+        else
+        {
+            i = 0;
+            u32Cntr = timer->CNT;
+        }
+    }
+    return 0;
 }
 
 /**

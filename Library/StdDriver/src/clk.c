@@ -21,6 +21,7 @@
   @{
 */
 
+int32_t g_CLK_i32ErrCode = 0;   /*!< CLK global error code */
 
 /** @addtogroup Mini57_CLK_EXPORTED_FUNCTIONS CLK Exported Functions
   @{
@@ -380,27 +381,37 @@ void CLK_DisableModuleClock(uint32_t u32ModuleIdx)
   * @brief      This function execute delay function.
   * @param[in]  us      Delay time. The Max value is 2^24 / CPU Clock(MHz). Ex:
   *                     50MHz => 335544us, 48MHz => 349525us, 28MHz => 699050us ...
-  * @return     None
+  * @return     Delay success or not
+  * @retval     0                   Success, target delay time reached
+  * @retval     CLK_TIMEOUT_ERR     Delay function execute failed due to SysTick stop working
   * @details    Use the SysTick to generate the delay time and the UNIT is in us.
   *             The SysTick clock source is from HCLK, i.e the same as system core clock.
   */
-void CLK_SysTickDelay(uint32_t us)
+int32_t CLK_SysTickDelay(uint32_t us)
 {
-    uint32_t delay_tick;
+    /* The u32TimeOutCnt value must be greater than the max delay time of 1398ms if HCLK=12MHz */
+    uint32_t u32TimeOutCnt = SystemCoreClock * 2;
 
-    delay_tick = us * CyclesPerUs;
-    if (delay_tick > SysTick_LOAD_RELOAD_Msk)   /* SysTick_LOAD_RELOAD_Msk is 24 bits for Mini57 */
-    {
-        printf("ERROR: CLK_SysTickDelay(): the delay tick (%d) cannot > %d !\n", us, SysTick_LOAD_RELOAD_Msk/CyclesPerUs);
-        return;
-    }
-    SysTick->LOAD = delay_tick;
-    SysTick->VAL  = (0x00);
+    SysTick->LOAD = us * CyclesPerUs;
+    SysTick->VAL  = 0x0UL;
     SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 
     /* Waiting for down-count to zero */
-    while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0);
-    SysTick->CTRL = 0;
+    while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0UL)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            break;
+        }
+    }
+
+    /* Disable SysTick counter */
+    SysTick->CTRL = 0UL;
+
+    if(u32TimeOutCnt == 0)
+        return CLK_TIMEOUT_ERR;
+    else
+        return 0;
 }
 
 /**
@@ -456,13 +467,22 @@ void CLK_DisableSysTick(void)
 uint32_t CLK_WaitClockReady(uint32_t u32ClkMask)
 {
     int32_t i32TimeOutCnt=2160000;
+    uint32_t u32Ret = 1U;    
 
+    g_CLK_i32ErrCode = 0;
     while((CLK->STATUS & u32ClkMask) != u32ClkMask)
     {
         if(i32TimeOutCnt-- <= 0)
-            return 0;
+        {
+            u32Ret = 0U;
+            break;
+        }
     }
-    return 1;
+    
+    if(i32TimeOutCnt == 0)
+        g_CLK_i32ErrCode = CLK_TIMEOUT_ERR;
+
+    return u32Ret;
 }
 
 
