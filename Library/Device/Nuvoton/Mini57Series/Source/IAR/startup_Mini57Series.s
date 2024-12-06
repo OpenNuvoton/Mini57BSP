@@ -21,7 +21,7 @@
 
     EXTERN  SystemInit	
     EXTERN  __iar_program_start
-    EXTERN  HardFault_Handler    
+    EXTERN  ProcessHardFault    
     PUBLIC  __vector_table
 
     DATA
@@ -109,6 +109,16 @@ Reset_Handler
         LDR      R0, =__iar_program_start
         BX       R0
 
+    PUBWEAK HardFault_Handler
+    SECTION .text:CODE:REORDER:NOROOT(2)
+HardFault_Handler
+        MOV     R0, LR
+        MRS     R1, MSP
+        MRS     R2, PSP
+        LDR     R3, =ProcessHardFault
+        BLX     R3
+        BX      R0
+        
     PUBWEAK NMI_Handler       
     PUBWEAK SVC_Handler       
     PUBWEAK PendSV_Handler    
@@ -161,6 +171,17 @@ EADCWCMP_IRQHandler
 Default_Handler          
     B Default_Handler         
 
+;int32_t SH_DoCommand(int32_t n32In_R0, int32_t n32In_R1, int32_t *pn32Out_R0)
+          PUBWEAK SH_DoCommand
+          SECTION .text:CODE:REORDER:ROOT(2)
+SH_DoCommand
+                IMPORT      SH_Return
+
+                BKPT    0xAB                ; Wait ICE or HardFault
+                LDR     R3, =SH_Return
+		PUSH    {R3 ,lr}
+                BLX     R3                  ; Call SH_Return. The return value is in R0
+		POP     {R3 ,PC}            ; Return value = R0
     
     END
 
