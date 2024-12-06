@@ -118,9 +118,9 @@ int main()
         EADC_START_CONV(EADC, EADC_CTL_ADC0SWTRG_Msk);              /* software trigger EADC0 */
         while (!EADC_GET_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk));    /* wait EADC0 completed by polling */
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk);
-        printf("FIRST, you MUST check Overrun status ... Overrun bit = %d\n", EADC_GET_DATA_OVERRUN_FLAG(EADC, EADC_STATUS_ADC0OV_Msk));
+        printf("FIRST, you MUST check Overrun status ... Overrun bit = %lu\n", EADC_GET_DATA_OVERRUN_FLAG(EADC, EADC_STATUS_ADC0OV_Msk));
         printf("SECOND, you can check Valid status ...   Valid bit = %d\n", EADC_GET_DATA_VALID_FLAG(EADC, EADC_BIT_MASK_EADC0));
-        printf("And then, you can read data = %d\n\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
+        printf("And then, you can read data = %lu\n\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
 
         printf("Press any key for next EADC conversion ... Press 'q' to quit.\n");
         ch = getchar();

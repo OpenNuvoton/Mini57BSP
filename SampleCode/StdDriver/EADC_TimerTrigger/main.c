@@ -64,7 +64,7 @@ void EADC0_IRQHandler(void)
     if(EADC_GET_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk))
     {
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk);   /* clear EADC0 interrupt flag */
-        printf("Get EADC0 FIFO 0 data = %d\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
+        printf("Get EADC0 FIFO 0 data = %lu\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
     }
 }
 

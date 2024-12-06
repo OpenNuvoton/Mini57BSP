@@ -99,7 +99,7 @@ int main()
 
         if (! HDIV_IS_DIVBYZERO())
         {
-            printf("HDIV calculation : %d / %d = %d ... %d, Divide by 0 flag : %d\n", x, y, q, r, HDIV_IS_DIVBYZERO());
+            printf("HDIV calculation : %d / %d = %d ... %d, Divide by 0 flag : %lu\n", x, y, q, r, HDIV_IS_DIVBYZERO());
             printf("Correct answer   : %d / %d = %d ... %d\n", x, y, x / y, x % y);
             if ((q == x / y) && (r == x % y))
                 printf("==> Division PASS !!!\n");

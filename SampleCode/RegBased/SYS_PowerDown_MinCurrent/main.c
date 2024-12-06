@@ -107,7 +107,7 @@ int main()
     UUART0->BRGEN = (51 << UUART_BRGEN_CLKDIV_Pos) | (7 << UUART_BRGEN_DSCNT_Pos); /* Set UART baud rate as 115200bps */
     UUART0->PROTCTL |= UUART_PROTCTL_PROTEN_Msk;                                /* Enable UART protocol */
 
-    printf("\n\nPDID 0x%08X\n", SYS->PDID & SYS_PDID_PDID_Msk);     /* Display PDID */
+    printf("\n\nPDID 0x%08lX\n", SYS->PDID & SYS_PDID_PDID_Msk);     /* Display PDID */
     printf("CPU @ %dHz\n", SystemCoreClock);        /* Display System Core Clock */
 
     printf("+-------------------------------------------------------------------+\n");

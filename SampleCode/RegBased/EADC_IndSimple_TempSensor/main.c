@@ -120,7 +120,7 @@ int main()
 
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC1F_Msk);
 
-        printf("Get EADC1 FIFO 0 data = %d\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0));
+        printf("Get EADC1 FIFO 0 data = %lu\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0));
 
         printf("Press any key for next EADC conversion ... Press 'q' to quit.\n");
         ch = getchar();

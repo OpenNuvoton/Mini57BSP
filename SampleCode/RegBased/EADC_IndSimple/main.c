@@ -129,7 +129,7 @@ int main()
 
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC0F_Msk);
 
-        printf("Get EADC0 FIFO 0 data = %d\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
+        printf("Get EADC0 FIFO 0 data = %lu\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0));
 
         EADC_START_CONV(EADC, EADC_CTL_ADC1SWTRG_Msk);  /* software trigger EADC1 */
 
@@ -137,7 +137,7 @@ int main()
 
         EADC_CLR_INT_FLAG(EADC, EADC_STATUS_ADC1F_Msk);
 
-        printf("Get EADC1 FIFO 0 data = %d\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0));
+        printf("Get EADC1 FIFO 0 data = %lu\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0));
 
         printf("Press any key for next EADC conversion ... Press 'q' to quit.\n");
         ch = getchar();

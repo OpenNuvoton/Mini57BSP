@@ -35,7 +35,7 @@ int32_t main()
         NOTE1: HardFault_Handler handler is implemented in retarget.c when semihost enabled.
         NOTE2: Semihost only works with Nuvoton NuLink ICE Dongle.
     */
-# if defined (__GNUC__)
+#if defined (__GNUC__) && !defined(__ARMCC_VERSION) && defined(OS_USE_SEMIHOSTING)
     initialise_monitor_handles();
 #endif
 

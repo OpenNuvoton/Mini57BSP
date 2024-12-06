@@ -53,10 +53,12 @@ void SYS_Init(void)
 
 
 #ifdef __ARMCC_VERSION
-__asm void __set_SP(uint32_t _sp)
+void __set_SP(uint32_t _sp)
 {
-    MSR MSP, r0
-    BX lr
+		__ASM(
+    "MSR MSP, r0 \n"
+    "BX lr \n"			
+			);
 }
 #endif
 
@@ -146,11 +148,11 @@ int main()
 
     func = (FUNC_PTR *) FMC->ISPDAT;
 
-#ifdef __GNUC__                        /* for GNU C compiler */
+#if defined ( __GNUC__ ) && !defined (__ARMCC_VERSION)                        /* for GNU C compiler */
     u32Data = *(uint32_t *)FMC_LDROM_BASE;
     asm("msr msp, %0" : : "r" (u32Data));
 #else
-    __set_SP(*(uint32_t *)FMC_APROM_BASE);
+    __set_SP(*(volatile uint32_t *)FMC_APROM_BASE);
 #endif
     func();
 

@@ -78,10 +78,12 @@ static int  set_IAP_boot_mode(void)
 
 
 #ifdef __ARMCC_VERSION
-__asm void __set_SP(uint32_t _sp)
+void __set_SP(uint32_t _sp)
 {
-    MSR MSP, r0
-    BX lr
+		__ASM(
+    "MSR MSP, r0 \n"
+    "BX lr \n"			
+			);
 }
 #endif
 
@@ -219,7 +221,7 @@ int main()
                 while (FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk) ;*/
 
             func = (FUNC_PTR *)FMC_Read(FMC_LDROM_BASE + 4);
-#ifdef __GNUC__                        /* for GNU C compiler */
+#if defined ( __GNUC__ ) && !defined (__ARMCC_VERSION)                      /* for GNU C compiler */
             u32Data = *(uint32_t *)FMC_LDROM_BASE;
             asm("msr msp, %0" : : "r" (u32Data));
 #else

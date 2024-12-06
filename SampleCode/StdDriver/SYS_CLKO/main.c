@@ -99,14 +99,14 @@ int main()
 
     CLK_EnableXtalRC(CLK_PWRCTL_HXT_EN);
     CLK_WaitClockReady(CLK_STATUS_XTLSTB_Msk);
-    printf("CLKO = HXT / 1 = %dHz.\n", __HXT);
+    printf("CLKO = HXT / 1 = %luHz.\n", __HXT);
     CLK_EnableCKO(CLK_CLKO_SRC_EXT, 0, 1);
     delay2s();
     CLK_DisableXtalRC(CLK_PWRCTL_HXT_EN);
 
     CLK_EnableXtalRC(CLK_PWRCTL_HXT_EN);
     CLK_WaitClockReady(CLK_STATUS_XTLSTB_Msk);
-    printf("CLKO = HXT / 2^(1+1) = %dHz.\n", __HXT/4);
+    printf("CLKO = HXT / 2^(1+1) = %luHz.\n", __HXT/4);
     CLK_EnableCKO(CLK_CLKO_SRC_EXT, 1, 0);
     delay2s();
     CLK_DisableXtalRC(CLK_PWRCTL_HXT_EN);

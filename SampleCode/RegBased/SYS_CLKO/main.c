@@ -73,7 +73,7 @@ void _CLK_SysTickDelay(uint32_t us)
     delay_tick = us * CyclesPerUs;
     if (delay_tick > SysTick_LOAD_RELOAD_Msk)   /* SysTick_LOAD_RELOAD_Msk is 24 bits for Mini57 */
     {
-        printf("ERROR: _CLK_SysTickDelay(): the delay tick (%d) cannot > %d !\n", us, SysTick_LOAD_RELOAD_Msk/CyclesPerUs);
+        printf("ERROR: _CLK_SysTickDelay(): the delay tick (%d) cannot > %lu !\n", us, SysTick_LOAD_RELOAD_Msk/CyclesPerUs);
         return;
     }
     SysTick->LOAD = delay_tick;
@@ -160,7 +160,7 @@ int main()
 
     SYS_UnlockReg();
 
-    printf("CLKO = HXT / 1 = %dHz.\n", __HXT);
+    printf("CLKO = HXT / 1 = %luHz.\n", __HXT);
     CLK->PWRCTL |= CLK_PWRCTL_HXT_EN;
     /* Set CLKO clock source and divider */
     CLK->CLKSEL1 = (CLK->CLKSEL1 & ~(CLK_CLKSEL1_CLKOSEL_Msk)) |
@@ -173,7 +173,7 @@ int main()
     delay2s();
     CLK->PWRCTL &= ~CLK_PWRCTL_HXT_EN;
 
-    printf("CLKO = HXT / 2^(1+1) = %dHz.\n", __HXT/4);
+    printf("CLKO = HXT / 2^(1+1) = %luHz.\n", __HXT/4);
     CLK->PWRCTL |= CLK_PWRCTL_HXT_EN;
     /* Set CLKO clock source and divider */
     /*      CKO = clock source / 2^(u32ClkDiv + 1) */

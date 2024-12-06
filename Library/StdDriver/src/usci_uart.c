@@ -463,7 +463,7 @@ uint32_t UUART_SetLine_Config(UUART_T* uuart, uint32_t u32baudrate, uint32_t u32
         for(u32DSCnt = 6; u32DSCnt <= 0x10; u32DSCnt++)   /* DSCNT could be 0x5~0xF */
         {
 
-            u32ClkDiv = u32Div / u32DSCnt;
+             u32ClkDiv = u32Div / u32DSCnt;
 
             if(u32ClkDiv > 0x400)
             {

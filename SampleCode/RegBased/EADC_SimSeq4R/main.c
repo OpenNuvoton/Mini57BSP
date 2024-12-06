@@ -137,15 +137,15 @@ int main()
         reg_eadc0 = EADC->DAT[0];
         reg_eadc1 = EADC->DAT[1];
 
-        printf("Get EADC0 FIFO 0 data = %4d (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0), (reg_eadc0 & EADC_DAT0_ADC0VALID_Msk) ? "Yes" : "No");
+        printf("Get EADC0 FIFO 0 data = %4lu (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT0), (reg_eadc0 & EADC_DAT0_ADC0VALID_Msk) ? "Yes" : "No");
 
         /* Simultaneous Sequential 4R Mode : EADC1 conversion is valid that don't need to trigger EADC1 */
-        printf("Get EADC1 FIFO 0 data = %4d (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0), (reg_eadc0 & EADC_DAT0_ADC1VALID_Msk) ? "Yes" : "No");
+        printf("Get EADC1 FIFO 0 data = %4lu (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT0), (reg_eadc0 & EADC_DAT0_ADC1VALID_Msk) ? "Yes" : "No");
 
         /* Simultaneous Sequential 4R Mode : FIFO 1 for both EADC0 and EADC1 conversion are valid */
-        printf("Get EADC0 FIFO 1 data = %4d (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT1), (reg_eadc1 & EADC_DAT1_ADC0VALID_Msk) ? "Yes" : "No");
+        printf("Get EADC0 FIFO 1 data = %4lu (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC0_DAT1), (reg_eadc1 & EADC_DAT1_ADC0VALID_Msk) ? "Yes" : "No");
 
-        printf("Get EADC1 FIFO 1 data = %4d (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT1), (reg_eadc1 & EADC_DAT1_ADC1VALID_Msk) ? "Yes" : "No");
+        printf("Get EADC1 FIFO 1 data = %4lu (valid = %s)\n", EADC_GET_CONV_DATA(EADC, EADC_EADC1_DAT1), (reg_eadc1 & EADC_DAT1_ADC1VALID_Msk) ? "Yes" : "No");
 
         printf("Press any key for next EADC conversion ... Press 'q' to quit.\n");
         ch = getchar();
