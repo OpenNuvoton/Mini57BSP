@@ -16,27 +16,23 @@
 void SYS_Init(void)
 {
     /* Enable Internal and External RC clock */
-    CLK->PWRCTL |= CLK_PWRCTL_HIRCEN_Msk;
+    CLK->PWRCTL = CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for Internal RC clock ready */
     while (!(CLK->STATUS & CLK_STATUS_HIRCSTB_Msk));
 
-    CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLKSEL_Msk)) | CLK_HCLK_SRC_HIRC;
-    CLK->CLKDIV &= ~CLK_CLKDIV_HCLKDIV_Msk;
-    CLK->CLKDIV |= CLK_CLKDIV_HCLK(1);
-    SystemCoreClock = __HIRC / 1;               // HCLK
+    SystemCoreClock = __HIRC;               // HCLK
     CyclesPerUs     = __HIRC / 1000000;         // For SYS_SysTickDelay()
     /* Enable USCI module clock */
-    CLK->APBCLK |= CLK_APBCLK_USCI0CKEN_Msk;
+    CLK->APBCLK = CLK_APBCLK_USCI0CKEN_Msk;
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
     /* Set GPD5 as output mode and GPD6 as Input mode */
-    PD->MODE = (PD->MODE & (~GPIO_MODE_MODE5_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
-    PD->MODE = (PD->MODE & (~GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_INPUT << GPIO_MODE_MODE6_Pos);
+    PD->MODE = (PD->MODE & ~(GPIO_MODE_MODE5_Msk | GPIO_MODE_MODE6_Msk)) | (GPIO_MODE_OUTPUT << GPIO_MODE_MODE5_Pos);
     /* USCI-Uart0-GPD5(TX) + GPD6(RX) */
     /* Set GPD multi-function pins for USCI UART0 GPD5(TX) and GPD6(RX) */
-    SYS->GPD_MFP = (SYS->GPD_MFP & ~(SYS_GPD_MFP_PD5MFP_Msk | SYS_GPD_MFP_PD6MFP_Msk)) | (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
+    SYS->GPD_MFP = (SYS_GPD_MFP_PD5_UART0_TXD | SYS_GPD_MFP_PD6_UART0_RXD);
 }
 
 

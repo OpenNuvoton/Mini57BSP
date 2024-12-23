@@ -39,11 +39,11 @@ void UI2C_Init(void)
     u32ClkDiv = 0xEF;
 
     /* Enable USCI_I2C protocol */
-    UI2C0->CTL = (UI2C0->CTL & ~UI2C_CTL_FUNMODE_Msk) | (4 << UI2C_CTL_FUNMODE_Pos);
+    UI2C0->CTL = (4 << UI2C_CTL_FUNMODE_Pos);
 
     /* Data format configuration */
     /* 8 bit data length */
-    UI2C0->LINECTL = (UI2C0->LINECTL & ~UI2C_LINECTL_DWIDTH_Msk) | (8 << UI2C_LINECTL_DWIDTH_Pos);
+    UI2C0->LINECTL = (8 << UI2C_LINECTL_DWIDTH_Pos);
 
     /* MSB data format */
     //UI2C0->LINECTL &= ~UI2C_LINECTL_LSB_Msk;

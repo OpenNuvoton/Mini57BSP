@@ -26,9 +26,6 @@ void USCI0_Init()
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init USCI                                                                                               */
     /*---------------------------------------------------------------------------------------------------------*/
-    /* Reset USCI0 */
-    SYS->IPRST1 |=  SYS_IPRST1_USCI0RST_Msk;
-    SYS->IPRST1 &= ~SYS_IPRST1_USCI0RST_Msk;
     /* Configure USCI0 as UART mode */
     UUART0->CTL = (2 << UUART_CTL_FUNMODE_Pos);                                 /* Select UART function mode */
     UUART0->LINECTL = UUART_WORD_LEN_8 | UUART_LINECTL_LSB_Msk;                 /* Set UART line configuration */

@@ -16,27 +16,24 @@
 void SYS_Init(void)
 {
     /* Enable Internal and External RC clock */
-    CLK->PWRCTL |= CLK_PWRCTL_HIRCEN_Msk;
+    CLK->PWRCTL = CLK_PWRCTL_HIRCEN_Msk;
 
     /* Waiting for Internal RC clock ready */
     while (!(CLK->STATUS & CLK_STATUS_HIRCSTB_Msk));
 
-    CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLKSEL_Msk)) | CLK_HCLK_SRC_HIRC;
-    CLK->CLKDIV &= ~CLK_CLKDIV_HCLKDIV_Msk;
-    CLK->CLKDIV |= CLK_CLKDIV_HCLK(1);
-    SystemCoreClock = __HIRC / 1;               // HCLK
+    SystemCoreClock = __HIRC;               // HCLK
     CyclesPerUs     = __HIRC / 1000000;         // For SYS_SysTickDelay()
     /* Enable USCI module clock */
-    CLK->APBCLK |= CLK_APBCLK_USCI0CKEN_Msk;
+    CLK->APBCLK = CLK_APBCLK_USCI0CKEN_Msk;
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
 
     /* Set GPA multi-function pins for USCI I2C0 GPA3(SCL) and GPA2(SDA) */
-    SYS->GPA_MFP = (SYS->GPA_MFP & ~(SYS_GPA_MFP_PA3MFP_Msk | SYS_GPA_MFP_PA2MFP_Msk)) | (SYS_GPA_MFP_PA3_I2C0_SCL | SYS_GPA_MFP_PA2_I2C0_SDA);
+    SYS->GPA_MFP = (SYS_GPA_MFP_PA3_I2C0_SCL | SYS_GPA_MFP_PA2_I2C0_SDA);	
 
     /* I2C pin enable schmitt trigger */
-    PA->SMTEN |= (GPIO_SMTEN_SMTEN2_Msk | GPIO_SMTEN_SMTEN3_Msk);
+    PA->SMTEN = (GPIO_SMTEN_SMTEN2_Msk | GPIO_SMTEN_SMTEN3_Msk);
 }
 
 
